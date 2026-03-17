@@ -11,6 +11,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
   let collageDriftTween = null;
   let responseAdvanceTimer = null;
 
+  setupCollageSwipe();
   bindResponses();
   bindMainActions();
   bindNavActions();
@@ -409,6 +410,173 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     }
   }
 
+  function setupCollageSwipe() {
+    const collageScene = sceneMap.get("collage");
+    const strip = collageScene?.querySelector(".collage");
+    const nextButton = collageScene?.querySelector(".collage-next");
+    if (!strip) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 820px)");
+    let enabled = mediaQuery.matches;
+    let active = false;
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startScroll = 0;
+    let startIndex = 0;
+    let startTime = 0;
+    let settleTimer = null;
+    let buttonTimer = null;
+
+    const onMediaChange = (event) => {
+      enabled = event.matches;
+      if (!enabled) {
+        strip.classList.remove("is-dragging");
+      }
+      syncNextButtonState();
+    };
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", onMediaChange);
+    } else {
+      mediaQuery.addListener(onMediaChange);
+    }
+
+    strip.addEventListener("pointerdown", onPointerDown, { passive: true });
+    strip.addEventListener("pointerup", onPointerUp, { passive: true });
+    strip.addEventListener("pointercancel", onPointerCancel, { passive: true });
+    strip.addEventListener("scroll", onScroll, { passive: true });
+    nextButton?.addEventListener("click", onNextTap);
+
+    syncNextButtonState();
+
+    function onNextTap() {
+      if (!enabled) return;
+      const cards = getCards(strip);
+      if (!cards.length) return;
+
+      const currentIndex = findNearestCardIndex(strip);
+      const targetIndex = clamp(currentIndex + 1, 0, cards.length - 1);
+      scrollCardIntoView(strip, cards[targetIndex]);
+      syncNextButtonState(targetIndex);
+      queueNextButtonSync(180);
+    }
+
+    function onPointerDown(event) {
+      if (!enabled) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      active = true;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startScroll = strip.scrollLeft;
+      startIndex = findNearestCardIndex(strip);
+      startTime = performance.now();
+
+      if (settleTimer) {
+        window.clearTimeout(settleTimer);
+        settleTimer = null;
+      }
+
+      strip.classList.add("is-dragging");
+      strip.setPointerCapture(pointerId);
+    }
+
+    function onPointerUp(event) {
+      if (!active || event.pointerId !== pointerId) return;
+      finishSwipe(event);
+    }
+
+    function onPointerCancel(event) {
+      if (!active || event.pointerId !== pointerId) return;
+      finishSwipe(event);
+    }
+
+    function onScroll() {
+      if (!enabled || active) return;
+      if (settleTimer) {
+        window.clearTimeout(settleTimer);
+      }
+
+      settleTimer = window.setTimeout(() => {
+        settleTimer = null;
+        const cards = getCards(strip);
+        if (!cards.length) return;
+        const nearest = findNearestCardIndex(strip);
+        scrollCardIntoView(strip, cards[nearest]);
+        syncNextButtonState(nearest);
+      }, 120);
+    }
+
+    function finishSwipe(event) {
+      if (!active) return;
+      active = false;
+      strip.classList.remove("is-dragging");
+
+      if (pointerId !== null) {
+        try {
+          strip.releasePointerCapture(pointerId);
+        } catch {
+          // no-op
+        }
+      }
+      pointerId = null;
+
+      const cards = getCards(strip);
+      if (!cards.length) return;
+
+      const currentX = Number.isFinite(event?.clientX) ? event.clientX : startX;
+      const currentY = Number.isFinite(event?.clientY) ? event.clientY : startY;
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
+      const deltaScroll = strip.scrollLeft - startScroll;
+      const elapsed = Math.max(16, performance.now() - startTime);
+      const velocityFromPointer = deltaX / elapsed;
+      const velocityFromScroll = deltaScroll / elapsed;
+      const velocityX = Math.abs(velocityFromScroll) > Math.abs(velocityFromPointer)
+        ? velocityFromScroll
+        : velocityFromPointer;
+      const mostlyHorizontal = Math.abs(deltaX) > Math.abs(deltaY) * 1.06 || Math.abs(deltaScroll) > 8;
+
+      const movedEnough = Math.abs(deltaScroll) > 16 || Math.abs(deltaX) > 12 || Math.abs(velocityX) > 0.05;
+      let targetIndex = findNearestCardIndex(strip);
+
+      if (mostlyHorizontal && movedEnough) {
+        const direction = deltaScroll > 0 ? 1 : -1;
+        targetIndex = clamp(startIndex + direction, 0, cards.length - 1);
+      }
+
+      scrollCardIntoView(strip, cards[targetIndex]);
+      syncNextButtonState(targetIndex);
+      queueNextButtonSync(180);
+    }
+
+    function queueNextButtonSync(delay = 120) {
+      if (buttonTimer) {
+        window.clearTimeout(buttonTimer);
+      }
+      buttonTimer = window.setTimeout(() => {
+        buttonTimer = null;
+        syncNextButtonState();
+      }, delay);
+    }
+
+    function syncNextButtonState(indexOverride) {
+      if (!nextButton) return;
+      const cards = getCards(strip);
+      const hasMultipleCards = enabled && cards.length > 1;
+      if (!hasMultipleCards) {
+        nextButton.disabled = true;
+        return;
+      }
+
+      const currentIndex =
+        typeof indexOverride === "number" ? indexOverride : findNearestCardIndex(strip);
+      nextButton.disabled = currentIndex >= cards.length - 1;
+    }
+  }
+
   function openKeepsake() {
     if (!dom.keepsakeButton) return;
 
@@ -438,4 +606,39 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     goToScene("note");
   }
 }
+
+function getCards(strip) {
+  return Array.from(strip.querySelectorAll(".memory-card"));
+}
+
+function findNearestCardIndex(strip) {
+  const cards = getCards(strip);
+  if (!cards.length) return 0;
+
+  const center = strip.scrollLeft + strip.clientWidth * 0.5;
+  let nearestIndex = 0;
+  let minDistance = Number.POSITIVE_INFINITY;
+
+  cards.forEach((card, index) => {
+    const cardCenter = card.offsetLeft + card.offsetWidth * 0.5;
+    const distance = Math.abs(center - cardCenter);
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestIndex = index;
+    }
+  });
+
+  return nearestIndex;
+}
+
+function scrollCardIntoView(strip, card) {
+  if (!card) return;
+  const target = card.offsetLeft - (strip.clientWidth - card.offsetWidth) * 0.5;
+  strip.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 
