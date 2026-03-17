@@ -93,6 +93,12 @@
   will-change: transform, opacity;
 }
 
+body.is-compact-motion .scene__glow {
+  filter: blur(24px);
+  animation-duration: 11s;
+  opacity: 0.8;
+}
+
 .scene__content,
 .note-card,
 .question-card {

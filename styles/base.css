@@ -163,6 +163,32 @@ body.is-locked .experience-shell {
   filter: blur(0.5px);
 }
 
+body.is-compact-motion .global-atmosphere__moon {
+  filter: blur(8px);
+  animation-duration: 24s;
+}
+
+body.is-compact-motion .global-atmosphere__aurora {
+  filter: blur(28px);
+  opacity: 0.62;
+  animation-duration: 26s;
+}
+
+body.is-compact-motion .global-atmosphere__bloom {
+  filter: blur(36px);
+  opacity: 0.22;
+  animation-duration: 46s;
+}
+
+body.is-compact-motion .global-atmosphere__mist {
+  filter: blur(14px);
+  animation-duration: 32s;
+}
+
+body.is-compact-motion .global-atmosphere__grain {
+  opacity: 0.08;
+}
+
 .lock-card__eyebrow,
 .scene__eyebrow,
 .note-card__eyebrow,

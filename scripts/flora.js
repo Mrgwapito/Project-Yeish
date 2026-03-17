@@ -26,6 +26,7 @@ const LILY_TINTS = [
     coreWine: "rgba(171, 99, 124, 0.84)",
   },
 ];
+const lilyMotionMap = new Map();
 
 export function prepareTypeNodes(nodes) {
   nodes.forEach((node) => {
@@ -36,7 +37,9 @@ export function prepareTypeNodes(nodes) {
 
 export function buildDust(field, env) {
   if (!field) return;
-  const count = env.compactMotion ? 8 : 14;
+  const compactMode = env.compactMotion || env.lowPerfDevice;
+  const count = env.lowPerfDevice ? 6 : compactMode ? 8 : 14;
+  const fragment = document.createDocumentFragment();
 
   for (let index = 0; index < count; index += 1) {
     const mote = document.createElement("span");
@@ -48,9 +51,9 @@ export function buildDust(field, env) {
     mote.style.left = `${random(0, 100)}%`;
     mote.style.top = `${random(0, 100)}%`;
     mote.style.opacity = `${random(0.1, 0.34)}`;
-    field.appendChild(mote);
+    fragment.appendChild(mote);
 
-    if (env.hasGSAP && !env.reducedMotion) {
+    if (env.hasGSAP && !env.reducedMotion && !env.lowPerfDevice) {
       gsap.to(mote, {
         x: random(-10, 10),
         y: random(-12, 12),
@@ -62,29 +65,36 @@ export function buildDust(field, env) {
       });
     }
   }
+
+  field.appendChild(fragment);
 }
 
 export function buildFallingLilies(field, env) {
   if (!field || env.reducedMotion) return;
-  const count = env.compactMotion ? 6 : 10;
+  const compactMode = env.compactMotion || env.lowPerfDevice;
+  const count = env.lowPerfDevice ? 3 : compactMode ? 5 : 9;
+  const fragment = document.createDocumentFragment();
 
   for (let index = 0; index < count; index += 1) {
     const lily = document.createElement("span");
     lily.className = "falling-lily";
     lily.style.setProperty("--fall-left", `${random(2, 96).toFixed(2)}%`);
-    lily.style.setProperty("--fall-size", `${random(10, env.compactMotion ? 18 : 22).toFixed(1)}px`);
+    lily.style.setProperty("--fall-size", `${random(10, compactMode ? 17 : 22).toFixed(1)}px`);
     lily.style.setProperty("--fall-duration", `${random(13, 22).toFixed(2)}s`);
     lily.style.setProperty("--fall-delay", `${random(-20, 0).toFixed(2)}s`);
     lily.style.setProperty("--fall-drift", `${random(-22, 22).toFixed(1)}px`);
     lily.style.setProperty("--fall-alpha", `${random(0.18, 0.42).toFixed(2)}`);
     lily.style.setProperty("--fall-blur", `${random(0, 0.9).toFixed(2)}px`);
-    field.appendChild(lily);
+    fragment.appendChild(lily);
   }
+
+  field.appendChild(fragment);
 }
 
 export function buildLilies(env) {
-  const scaleFactor = env.compactMotion ? 0.84 : 1;
-  const countScale = env.compactMotion ? 0.52 : 0.68;
+  const compactMode = env.compactMotion || env.lowPerfDevice;
+  const scaleFactor = compactMode ? 0.84 : 1;
+  const countScale = env.lowPerfDevice ? 0.62 : env.compactMotion ? 0.74 : 0.88;
   const settings = {
     back: {
       size: [110 * scaleFactor, 170 * scaleFactor],
@@ -117,6 +127,9 @@ export function buildLilies(env) {
     const count = Math.max(0, Math.round(baseCount * sceneScale));
     const anchorOffset = count > 3 ? Math.floor(random(0, 6)) : 0;
     if (count === 0) return;
+    const fragment = document.createDocumentFragment();
+    const outerPetalCount = compactMode ? 5 : 6;
+    const innerPetalCount = compactMode ? 2 : 3;
 
     for (let index = 0; index < count; index += 1) {
       const lily = document.createElement("div");
@@ -126,6 +139,9 @@ export function buildLilies(env) {
 
       lily.className = "lily";
       lily.dataset.depth = depth;
+      if (env.lowPerfDevice && depth === "back") {
+        lily.classList.add("is-static");
+      }
       if (isWelcome && (depth === "front" || (depth === "mid" && index === 0))) {
         lily.classList.add("is-draggable");
         lily.dataset.draggable = "1";
@@ -153,23 +169,23 @@ export function buildLilies(env) {
         lily.style.transform = `translate(-50%, -50%) rotate(${random(-24, 24)}deg)`;
       }
 
-      for (let petalIndex = 0; petalIndex < 6; petalIndex += 1) {
+      for (let petalIndex = 0; petalIndex < outerPetalCount; petalIndex += 1) {
         const petal = document.createElement("span");
         petal.className = "petal petal--outer";
-        petal.style.setProperty("--petal-rotate", `${petalIndex * 60 + petalOffset}deg`);
+        petal.style.setProperty("--petal-rotate", `${petalIndex * (360 / outerPetalCount) + petalOffset}deg`);
         petal.style.setProperty("--petal-scale", random(0.92, 1.08).toFixed(2));
         petal.style.setProperty("--petal-tilt", `${random(-10, 10)}deg`);
-        petal.style.setProperty("--petal-motion", `${random(7.4, 11.2).toFixed(2)}s`);
+        petal.style.setProperty("--petal-motion", `${random(8.6, 12.4).toFixed(2)}s`);
         lily.appendChild(petal);
       }
 
-      for (let innerIndex = 0; innerIndex < 3; innerIndex += 1) {
+      for (let innerIndex = 0; innerIndex < innerPetalCount; innerIndex += 1) {
         const inner = document.createElement("span");
         inner.className = "petal petal--inner";
-        inner.style.setProperty("--petal-rotate", `${innerIndex * 120 + petalOffset + 24}deg`);
+        inner.style.setProperty("--petal-rotate", `${innerIndex * (360 / innerPetalCount) + petalOffset + 24}deg`);
         inner.style.setProperty("--petal-scale", random(0.84, 0.94).toFixed(2));
         inner.style.setProperty("--petal-tilt", `${random(-6, 6)}deg`);
-        inner.style.setProperty("--petal-motion", `${random(6.8, 9.8).toFixed(2)}s`);
+        inner.style.setProperty("--petal-motion", `${random(8.2, 11.6).toFixed(2)}s`);
         lily.appendChild(inner);
       }
 
@@ -177,13 +193,15 @@ export function buildLilies(env) {
       lily.appendChild(createSpan("lily__halo lily__halo--b"));
       lily.appendChild(createSpan("lily__halo lily__halo--c"));
       lily.appendChild(createSpan("lily__core"));
-      field.appendChild(lily);
+      fragment.appendChild(lily);
     }
+
+    field.appendChild(fragment);
   });
 }
 
 export function enableLilyDrag(env) {
-  if (env.reducedMotion) return;
+  if (env.reducedMotion || !env.hasGSAP) return;
 
   const draggableLilies = Array.from(document.querySelectorAll('.lily[data-draggable="1"]'));
   if (!draggableLilies.length) return;
@@ -243,10 +261,14 @@ export function enableLilyDrag(env) {
 export function setupAmbientMotion(env) {
   if (!env.hasGSAP || env.reducedMotion) return;
 
+  lilyMotionMap.clear();
+
   gsap.utils.toArray(".lily").forEach((lily) => {
     if (lily.dataset.draggable === "1") return;
+    if (lily.classList.contains("is-static")) return;
+
     const depth = lily.dataset.depth || "mid";
-    const compactFactor = env.compactMotion ? 0.58 : 1;
+    const compactFactor = env.compactMotion || env.lowPerfDevice ? 0.58 : 1;
     const movement =
       depth === "front"
         ? { x: 16 * compactFactor, y: 20 * compactFactor, rotation: 5 * compactFactor, durationMin: 7.2, durationMax: 10.8 }
@@ -254,7 +276,7 @@ export function setupAmbientMotion(env) {
           ? { x: 8 * compactFactor, y: 10 * compactFactor, rotation: 2.5 * compactFactor, durationMin: 9.8, durationMax: 13.4 }
           : { x: 12 * compactFactor, y: 15 * compactFactor, rotation: 4 * compactFactor, durationMin: 8.2, durationMax: 11.8 };
 
-    gsap.to(lily, {
+    const lilyTween = gsap.to(lily, {
       x: random(-movement.x, movement.x),
       y: random(-movement.y, movement.y),
       rotation: `+=${random(-movement.rotation, movement.rotation)}`,
@@ -264,16 +286,45 @@ export function setupAmbientMotion(env) {
       ease: "sine.inOut",
       delay: random(0, 1.8),
       force3D: true,
+      paused: true,
     });
 
-    gsap.to(lily.querySelectorAll(".lily__halo"), {
-      rotation: `+=${random(-10, 10)}`,
-      scale: () => random(0.96, 1.04),
-      duration: random(6.2, 9.2),
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      force3D: true,
+    const tweens = [lilyTween];
+    const haloes = lily.querySelectorAll(".lily__halo");
+    if (haloes.length && !env.lowPerfDevice) {
+      const haloTween = gsap.to(haloes, {
+        rotation: `+=${random(-10, 10)}`,
+        scale: () => random(0.96, 1.04),
+        duration: random(6.2, 9.2),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        force3D: true,
+        paused: true,
+      });
+      tweens.push(haloTween);
+    }
+
+    lilyMotionMap.set(lily, tweens);
+  });
+}
+
+export function setActiveLilyScene(sceneName) {
+  if (!lilyMotionMap.size) return;
+
+  document.querySelectorAll(".scene").forEach((scene) => {
+    const isActiveScene = scene.dataset.scene === sceneName;
+    scene.querySelectorAll(".lily").forEach((lily) => {
+      const tweens = lilyMotionMap.get(lily);
+      if (!tweens) return;
+
+      tweens.forEach((tween) => {
+        if (isActiveScene) {
+          tween.play();
+        } else {
+          tween.pause();
+        }
+      });
     });
   });
 }
@@ -283,6 +334,11 @@ export function animateWelcomeEntrance(env) {
 
   const welcome = document.querySelector('[data-scene="welcome"]');
   if (!welcome) return;
+  const titleNode = welcome.querySelector(".scene__title");
+  if (titleNode) {
+    titleNode.dataset.finalTitle = titleNode.textContent.trim();
+    titleNode.textContent = "Hi, Isay";
+  }
 
   gsap.timeline({ defaults: { ease: "power2.out" } })
     .from(".scene--welcome .lily", {
@@ -293,6 +349,50 @@ export function animateWelcomeEntrance(env) {
     })
     .from(".scene--welcome .scene__eyebrow", { opacity: 0, y: 18, duration: 0.8 }, 0.25)
     .from(".scene--welcome .scene__title", { opacity: 0, y: 24, duration: 1.1 }, 0.45)
+    .add(() => {
+      if (titleNode) {
+        playJokeTitleReveal(titleNode);
+      }
+    }, 0.88)
     .from(".scene--welcome .scene__lede", { opacity: 0, y: 18, duration: 0.8 }, 0.7)
     .from(".scene--welcome .scene__button", { opacity: 0, y: 16, duration: 0.8 }, 0.95);
+}
+
+function playJokeTitleReveal(titleNode) {
+  if (!titleNode || titleNode.dataset.titleJokeDone === "1") return;
+  titleNode.dataset.titleJokeDone = "1";
+
+  const finalText = titleNode.dataset.finalTitle || "Yeshie";
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const holdFrames = 8;
+  const scrambleFrames = 16;
+  const totalFrames = holdFrames + scrambleFrames;
+  let frame = 0;
+
+  titleNode.textContent = "Hi, Isay";
+
+  const intervalId = window.setInterval(() => {
+    frame += 1;
+
+    if (frame <= holdFrames) return;
+
+    const progress = Math.min(1, (frame - holdFrames) / scrambleFrames);
+    const revealCount = Math.floor(progress * finalText.length);
+    let nextText = "";
+
+    for (let index = 0; index < finalText.length; index += 1) {
+      if (index < revealCount) {
+        nextText += finalText[index];
+      } else {
+        nextText += chars[Math.floor(Math.random() * chars.length)];
+      }
+    }
+
+    titleNode.textContent = nextText;
+
+    if (frame >= totalFrames) {
+      window.clearInterval(intervalId);
+      titleNode.textContent = finalText;
+    }
+  }, 42);
 }

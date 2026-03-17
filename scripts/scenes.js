@@ -3,11 +3,12 @@ import { getAtmosphereTargets, getSceneTargets, wait } from "./utils.js";
 
 const SCENE_ORDER = ["welcome", "reveal", "keepsake", "note", "collage", "question", "response", "final"];
 
-export function createSceneController({ dom, state, sceneMap, audio, env }) {
+export function createSceneController({ dom, state, sceneMap, audio, env, onSceneChange }) {
   const typedScenes = new Set();
   let keepsakeOpened = false;
   let isTransitioning = false;
   let isBeginning = false;
+  let collageDriftTween = null;
 
   bindResponses();
   bindMainActions();
@@ -25,6 +26,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env }) {
     welcome.style.opacity = "1";
     welcome.style.visibility = "visible";
     dom.body.dataset.scene = "welcome";
+    onSceneChange?.("welcome");
     updateNavState();
   }
 
@@ -146,6 +148,10 @@ export function createSceneController({ dom, state, sceneMap, audio, env }) {
     const current = sceneMap.get(state.currentScene);
     const next = sceneMap.get(name);
     if (!next) return;
+    if (state.currentScene === "collage" && collageDriftTween) {
+      collageDriftTween.kill();
+      collageDriftTween = null;
+    }
 
     isTransitioning = true;
     updateNavState();
@@ -164,6 +170,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env }) {
 
     state.currentScene = name;
     dom.body.dataset.scene = name;
+    onSceneChange?.(name);
     await runScene(name, token);
     updateNavState();
   }
@@ -372,7 +379,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env }) {
       }
     );
 
-    gsap.to(cards, {
+    collageDriftTween = gsap.to(cards, {
       y: (index) => (index % 2 === 0 ? -4 : 4),
       duration: 3.8,
       repeat: -1,

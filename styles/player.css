@@ -1,13 +1,15 @@
 .music-player {
   position: fixed;
-  left: 50%;
-  top: calc(0.55rem + env(safe-area-inset-top));
-  transform: translateX(-50%);
+  right: clamp(0.65rem, 2vw, 1.1rem);
+  bottom: calc(0.72rem + env(safe-area-inset-bottom));
+  left: auto;
+  top: auto;
+  transform: none;
   z-index: 20;
   display: grid;
   grid-template-columns: 62px minmax(0, 1fr);
   gap: 0.62rem;
-  width: min(94vw, 374px);
+  width: min(374px, calc(100vw - 1.4rem));
   padding: 0.56rem 0.68rem 0.62rem;
   border: 1px solid rgba(214, 225, 240, 0.12);
   border-radius: 22px;
@@ -170,10 +172,14 @@
   color: rgba(215, 224, 236, 0.75);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .music-player {
-    width: min(calc(100vw - 1rem), 346px);
+    left: 50%;
     top: calc(0.45rem + env(safe-area-inset-top));
+    right: auto;
+    bottom: auto;
+    transform: translateX(-50%);
+    width: min(calc(100vw - 1rem), 346px);
     padding: 0.5rem 0.56rem 0.52rem;
     gap: 0.5rem;
     border-radius: 20px;

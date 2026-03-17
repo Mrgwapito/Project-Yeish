@@ -2,6 +2,9 @@ import { normalizePassword } from "./utils.js";
 
 export function bindLock({ dom, env, sitePassword, unlockSessionKey, onUnlock }) {
   const { lockForm, passwordInput, lockMessage } = dom;
+  const normalizedSitePassword = normalizePassword(sitePassword || "");
+  const defaultHint = "Hint: one of your cat names.";
+  let failedAttempts = 0;
 
   if (hasUnlockSession(unlockSessionKey)) {
     unlockExperience(dom, env, onUnlock, { instant: true });
@@ -13,11 +16,19 @@ export function bindLock({ dom, env, sitePassword, unlockSessionKey, onUnlock })
     return;
   }
 
+  lockMessage.textContent = defaultHint;
+  lockMessage.classList.remove("is-error");
+
+  passwordInput.addEventListener("input", () => {
+    lockMessage.classList.remove("is-error");
+  });
+
   lockForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
-    if (normalizePassword(passwordInput.value) !== sitePassword) {
-      lockMessage.textContent = "That password does not open this one. Try the exact inside joke.";
+    if (normalizePassword(passwordInput.value) !== normalizedSitePassword) {
+      failedAttempts += 1;
+      lockMessage.textContent = getFailedHint(failedAttempts);
       lockMessage.classList.add("is-error");
 
       if (env.hasGSAP && !env.reducedMotion) {
@@ -32,11 +43,18 @@ export function bindLock({ dom, env, sitePassword, unlockSessionKey, onUnlock })
       return;
     }
 
+    failedAttempts = 0;
     storeUnlockSession(unlockSessionKey);
     lockMessage.classList.remove("is-error");
     lockMessage.textContent = "Unlocked.";
     unlockExperience(dom, env, onUnlock);
   });
+}
+
+function getFailedHint(attempts) {
+  if (attempts === 1) return "Maybe the other one.";
+  if (attempts === 2) return "Try the other one.";
+  return "Hint: your playlist name.";
 }
 
 function unlockExperience(dom, env, onUnlock, options = {}) {

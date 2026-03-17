@@ -3,6 +3,7 @@ import { getDom } from "./dom.js";
 import { createAudioController } from "./audio.js";
 import {
   setupAmbientMotion,
+  setActiveLilyScene,
   animateWelcomeEntrance,
   buildDust,
   buildFallingLilies,
@@ -16,6 +17,14 @@ import { createSceneController } from "./scenes.js";
 export function bootApp() {
   const env = getEnv();
   const dom = getDom();
+  const compactMode = env.compactMotion || env.lowPerfDevice;
+
+  if (env.hasGSAP) {
+    gsap.config({ autoSleep: 60, force3D: true, nullTargetWarn: false });
+    gsap.ticker.lagSmoothing(1000, 16);
+  }
+
+  dom.body.classList.toggle("is-compact-motion", compactMode);
 
   const state = {
     currentScene: "welcome",
@@ -37,7 +46,16 @@ export function bootApp() {
   const audio = createAudioController({ dom, state });
 
   const sceneMap = new Map(dom.scenes.map((scene) => [scene.dataset.scene, scene]));
-  const scenes = createSceneController({ dom, state, sceneMap, audio, env });
+  const scenes = createSceneController({
+    dom,
+    state,
+    sceneMap,
+    audio,
+    env,
+    onSceneChange: (sceneName) => {
+      setActiveLilyScene(sceneName);
+    },
+  });
 
   if (dom.beginButton) {
     dom.beginButton.disabled = false;
@@ -60,6 +78,7 @@ export function bootApp() {
 
   if (env.hasGSAP && !env.reducedMotion) {
     setupAmbientMotion(env);
+    setActiveLilyScene(state.currentScene);
     animateWelcomeEntrance(env);
   } else {
     scenes.showWelcomeFallback();
