@@ -397,14 +397,16 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
       }
     );
 
-    collageDriftTween = gsap.to(cards, {
-      y: (index) => (index % 2 === 0 ? -4 : 4),
-      duration: 3.8,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-      stagger: 0.14,
-    });
+    if (!(env.compactMotion || env.lowPerfDevice)) {
+      collageDriftTween = gsap.to(cards, {
+        y: (index) => (index % 2 === 0 ? -4 : 4),
+        duration: 3.8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: 0.14,
+      });
+    }
   }
 
   function openKeepsake() {
@@ -436,3 +438,4 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     goToScene("note");
   }
 }
+

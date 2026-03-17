@@ -697,7 +697,11 @@ body.is-compact-motion .scene__glow {
   .scene--collage .collage {
     display: flex;
     overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 0.6rem;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scroll-behavior: smooth;
     gap: 0.8rem;
     padding: 0.15rem 0.1rem 0.25rem;
     -webkit-overflow-scrolling: touch;
@@ -708,8 +712,10 @@ body.is-compact-motion .scene__glow {
   }
 
   .scene--collage .memory-card {
-    flex: 0 0 min(82vw, 360px);
+    flex: 0 0 min(78vw, 340px);
+    min-height: 208px;
     scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 
   .response-grid {
@@ -747,6 +753,16 @@ body.is-compact-motion .scene__glow {
       max(0.85rem, env(safe-area-inset-top))
       0.95rem
       calc(6rem + env(safe-area-inset-bottom));
+  }
+
+  .scene--collage,
+  .scene--question,
+  .scene--response {
+    padding-top: max(calc(env(safe-area-inset-top) + 6.2rem), 6.4rem);
+  }
+
+  .scene--response .response-grid {
+    gap: 0.72rem;
   }
 
   .scene__title {
@@ -787,20 +803,22 @@ body.is-compact-motion .scene__glow {
   }
 
   .question-card__line {
-    font-size: clamp(1.48rem, 5.8vw, 2.05rem);
-    line-height: 1.22;
+    font-size: clamp(1.16rem, 4.8vw, 1.6rem);
+    line-height: 1.28;
   }
 
   .response-card {
-    min-height: 108px;
-    font-size: 0.94rem;
+    min-height: 88px;
+    padding: 0.86rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
   }
 
   .response-echo {
-    margin-top: 0.95rem;
-    font-size: 0.92rem;
-    line-height: 1.6;
-    min-height: 4.2rem;
+    margin-top: 0.72rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    min-height: 2.8rem;
   }
 
   .scene__glow {
@@ -860,3 +878,4 @@ body.is-compact-motion .scene__glow {
     transform: translate(-50%, -50%) scale(1.015);
   }
 }
+

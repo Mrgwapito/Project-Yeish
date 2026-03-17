@@ -88,7 +88,9 @@ export function bootApp() {
     scenes.showWelcomeFallback();
   }
 
-  if (!state.experienceUnlocked) {
+  if (!state.experienceUnlocked && !env.compactMotion) {
     dom.passwordInput?.focus();
   }
 }
+
+
