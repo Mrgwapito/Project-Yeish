@@ -1,0 +1,28 @@
+export function getDom() {
+  return {
+    body: document.body,
+    lockScreen: document.getElementById("lock-screen"),
+    lockForm: document.getElementById("lock-form"),
+    passwordInput: document.getElementById("password-input"),
+    lockMessage: document.getElementById("lock-message"),
+    petalFall: document.getElementById("petal-fall"),
+    dustField: document.getElementById("dust-field"),
+    scenes: Array.from(document.querySelectorAll(".scene")),
+    typeNodes: Array.from(document.querySelectorAll(".type-line")),
+    beginButton: document.getElementById("begin-button"),
+    keepsakeButton: document.getElementById("keepsake-button"),
+    prevButton: document.getElementById("scene-prev"),
+    nextButton: document.getElementById("scene-next"),
+    sceneProgress: document.getElementById("scene-progress"),
+    responseEcho: document.getElementById("response-echo"),
+    responseCards: Array.from(document.querySelectorAll(".response-card")),
+    musicPlayer: document.getElementById("music-player"),
+    loveSong: document.getElementById("love-song"),
+    audioStatus: document.getElementById("audio-status"),
+    playerToggle: document.getElementById("player-toggle"),
+    musicState: document.getElementById("music-state"),
+    seekBar: document.getElementById("seek-bar"),
+    currentTimeLabel: document.getElementById("current-time"),
+    durationTimeLabel: document.getElementById("duration-time"),
+  };
+}

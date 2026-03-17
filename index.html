@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Develop by Aspin Na Monkey</title>
+    <meta
+      name="description"
+      content="A private midnight garden made with care for Yeshie."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/lock.css" />
+    <link rel="stylesheet" href="styles/player.css" />
+    <link rel="stylesheet" href="styles/scenes.css" />
+    <link rel="stylesheet" href="styles/flora.css" />
+  </head>
+  <body class="is-locked">
+    <div class="lock-screen" id="lock-screen">
+      <div class="lock-screen__veil"></div>
+      <div class="lock-card">
+        <p class="lock-card__eyebrow">A private little garden</p>
+        <h1 class="lock-card__title">For Yeshie</h1>
+        <p class="lock-card__copy">
+          This opens with one small password first, just to keep it between the right two people.
+        </p>
+
+        <form class="lock-form" id="lock-form">
+          <label class="lock-form__label" for="password-input">Password</label>
+          <input
+            class="lock-form__input"
+            id="password-input"
+            name="password"
+            type="password"
+            placeholder="enter the little inside joke"
+            autocomplete="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <button class="lock-form__button" type="submit">Enter softly</button>
+          <p class="lock-form__message" id="lock-message" aria-live="polite">
+            The password is case-insensitive.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <div class="experience-shell" id="experience">
+      <div class="global-atmosphere" aria-hidden="true">
+        <div class="global-atmosphere__moon"></div>
+        <div class="global-atmosphere__aurora"></div>
+        <div class="global-atmosphere__bloom"></div>
+        <div class="global-atmosphere__mist"></div>
+        <div class="global-atmosphere__grain"></div>
+        <div class="petal-fall" id="petal-fall"></div>
+        <div class="dust-field" id="dust-field"></div>
+      </div>
+
+      <aside class="music-player" id="music-player" aria-label="Song player">
+        <audio id="love-song" preload="metadata">
+          <source src="music/Hozier - Do I Wanna Know _.mp3" type="audio/mpeg" />
+        </audio>
+
+        <div class="music-player__art" aria-hidden="true">
+          <span class="music-player__cover-mark">H</span>
+          <span class="music-player__vinyl"></span>
+        </div>
+
+        <div class="music-player__body">
+          <div class="music-player__meta">
+            <p class="music-player__eyebrow">Tonight</p>
+            <p class="music-player__title">Do I Wanna Know?</p>
+            <p class="music-player__artist">Hozier</p>
+            <p class="music-player__status" id="audio-status">
+              Tap play whenever you want.
+            </p>
+          </div>
+
+          <div class="music-player__timeline">
+            <span class="music-player__time" id="current-time">0:00</span>
+            <input
+              class="music-player__seek"
+              id="seek-bar"
+              type="range"
+              min="0"
+              max="100"
+              value="0"
+              step="0.1"
+              aria-label="Song progress"
+            />
+            <span class="music-player__time" id="duration-time">0:00</span>
+          </div>
+
+          <div class="music-player__controls">
+            <button
+              class="music-player__play"
+              id="player-toggle"
+              type="button"
+              aria-label="Play song"
+            >
+              >
+            </button>
+            <span class="music-player__hint" id="music-state">Ready</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="stage" id="stage">
+        <section
+          class="scene scene--welcome scene--active"
+          data-scene="welcome"
+          aria-hidden="false"
+        >
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="2"></div>
+          <div class="flora-field" data-depth="mid" data-count="2"></div>
+          <div class="flora-field" data-depth="front" data-count="1"></div>
+
+          <div class="scene__content scene__content--hero">
+            <p class="scene__eyebrow">A quiet little place made only for you</p>
+            <h1 class="scene__title">Yeshie</h1>
+            <p class="scene__lede">
+              I wanted this to feel like a blue midnight garden, soft enough to stay in for a
+              while.
+            </p>
+            <button class="scene__button" id="begin-button" type="button">
+              Begin gently
+            </button>
+          </div>
+        </section>
+
+        <section class="scene scene--reveal" data-scene="reveal" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+          <div class="flora-field" data-depth="front" data-count="0"></div>
+
+          <div class="scene__content scene__content--narrow">
+            <p class="scene__whisper type-line">
+              Before I ask anything, I wanted this to feel a little more special.
+            </p>
+          </div>
+        </section>
+
+        <section class="scene scene--keepsake" data-scene="keepsake" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+
+          <div class="scene__content scene__content--narrow">
+            <p class="scene__eyebrow">Something honest, opened carefully</p>
+            <button class="keepsake" id="keepsake-button" type="button" aria-label="Open the note">
+              <span class="keepsake__shadow"></span>
+              <span class="keepsake__card">
+                <span class="keepsake__paper"></span>
+                <span class="keepsake__lid"></span>
+                <span class="keepsake__seal"></span>
+                <span class="keepsake__hint">open the note</span>
+              </span>
+            </button>
+          </div>
+        </section>
+
+        <section class="scene scene--note" data-scene="note" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+          <div class="flora-field" data-depth="front" data-count="0"></div>
+
+          <article class="note-card">
+            <p class="note-card__eyebrow">For you, quietly</p>
+            <p class="note-card__body type-line">
+              I have genuinely been enjoying our conversations. There is something easy and
+              meaningful about talking with you, and I wanted to be honest about that.
+            </p>
+          </article>
+        </section>
+
+        <section class="scene scene--collage" data-scene="collage" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+
+          <div class="scene__content scene__content--wide">
+            <div class="collage">
+              <article class="memory-card">
+                <p class="memory-card__tag">late-night feeling</p>
+                <div class="memory-card__frame memory-card__frame--wave">
+                  <div class="visual-waveform">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                  <p class="visual-clock">01:00 AM</p>
+                </div>
+                <p class="memory-card__note">
+                  The kind of quiet that turns into long calls.
+                </p>
+              </article>
+
+              <article class="memory-card">
+                <p class="memory-card__tag">small detail</p>
+                <div class="memory-card__frame memory-card__frame--scan">
+                  <div class="visual-grid"></div>
+                  <div class="visual-lily" aria-hidden="true">
+                    <span class="visual-lily__petal visual-lily__petal--1"></span>
+                    <span class="visual-lily__petal visual-lily__petal--2"></span>
+                    <span class="visual-lily__petal visual-lily__petal--3"></span>
+                    <span class="visual-lily__petal visual-lily__petal--4"></span>
+                    <span class="visual-lily__petal visual-lily__petal--5"></span>
+                    <span class="visual-lily__petal visual-lily__petal--6"></span>
+                    <span class="visual-lily__orbit visual-lily__orbit--1"></span>
+                    <span class="visual-lily__orbit visual-lily__orbit--2"></span>
+                    <span class="visual-lily__orbit visual-lily__orbit--3"></span>
+                    <span class="visual-lily__core"></span>
+                  </div>
+                  <div class="visual-swatches" aria-hidden="true">
+                    <span class="visual-swatch visual-swatch--blue">Blue</span>
+                    <span class="visual-swatch visual-swatch--sedge">Sedge</span>
+                    <span class="visual-swatch visual-swatch--burgundy">Burgundy</span>
+                  </div>
+                </div>
+                <p class="memory-card__note">
+                  Blue, sedge, and burgundy, kept soft around a lily.
+                </p>
+              </article>
+
+              <article class="memory-card">
+                <p class="memory-card__tag">held gently</p>
+                <div class="memory-card__frame memory-card__frame--sync">
+                  <span class="visual-node visual-node--left"></span>
+                  <span class="visual-link"></span>
+                  <span class="visual-node visual-node--right"></span>
+                </div>
+                <p class="memory-card__note">
+                  Not loud. Just two signals held with intention.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="scene scene--question" data-scene="question" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+          <div class="flora-field" data-depth="front" data-count="0"></div>
+
+          <article class="question-card">
+            <p class="scene__eyebrow">This is all I wanted to ask</p>
+            <p class="question-card__line type-line">
+              I really like talking to you, and I have been enjoying this a lot.
+            </p>
+            <p class="question-card__line type-line">
+              I am not trying to rush anything, but I just want to ask honestly,
+            </p>
+            <p class="question-card__line type-line">
+              do you feel like we are getting to know each other in the same direction?
+            </p>
+          </article>
+        </section>
+
+        <section class="scene scene--response" data-scene="response" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+
+          <div class="scene__content scene__content--wide">
+            <div class="response-grid">
+              <button
+                class="response-card"
+                type="button"
+                data-followup="That means a lot. I would like to keep this honest, gentle, and real."
+              >
+                <span class="response-card__title">Yes, I feel it too</span>
+              </button>
+              <button
+                class="response-card"
+                type="button"
+                data-followup="That feels good to hear. We can let it unfold at a pace that feels right."
+              >
+                <span class="response-card__title">I want to keep getting to know you more</span>
+              </button>
+              <button
+                class="response-card"
+                type="button"
+                data-followup="That is completely okay. I would rather have honesty than a rushed answer."
+              >
+                <span class="response-card__title">I am not sure yet</span>
+              </button>
+              <button
+                class="response-card"
+                type="button"
+                data-followup="I would really value that. A real conversation matters more than guessing."
+              >
+                <span class="response-card__title">Let us talk about it honestly</span>
+              </button>
+            </div>
+
+            <p class="response-echo" id="response-echo">
+              Whatever you feel, I want it to be honest and easy to say.
+            </p>
+          </div>
+        </section>
+
+        <section class="scene scene--final" data-scene="final" aria-hidden="true">
+          <div class="scene__glow"></div>
+          <div class="flora-field" data-depth="back" data-count="1"></div>
+          <div class="flora-field" data-depth="mid" data-count="1"></div>
+
+          <div class="scene__content scene__content--narrow">
+            <p class="final-line type-line">
+              No pressure. I will appreciate honesty more than the perfect answer.
+            </p>
+          </div>
+        </section>
+      </main>
+
+      <nav class="scene-nav" aria-label="Scene controls">
+        <button class="scene-nav__button" id="scene-prev" type="button">Previous</button>
+        <p class="scene-nav__progress" id="scene-progress">1 / 8</p>
+        <button class="scene-nav__button" id="scene-next" type="button">Begin</button>
+      </nav>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>

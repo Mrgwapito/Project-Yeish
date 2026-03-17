@@ -1,0 +1,100 @@
+.lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(4, 9, 18, 0.58);
+  backdrop-filter: blur(14px);
+}
+
+.lock-screen.is-hidden {
+  pointer-events: none;
+}
+
+.lock-screen__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(139, 171, 216, 0.14), transparent 18%),
+    radial-gradient(circle at 20% 80%, rgba(108, 51, 71, 0.1), transparent 22%),
+    linear-gradient(180deg, rgba(6, 12, 24, 0.24), rgba(3, 7, 14, 0.52));
+}
+
+.lock-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 430px);
+  padding: clamp(1.35rem, 4vw, 2rem);
+  border: 1px solid rgba(214, 225, 240, 0.14);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(180deg, rgba(10, 19, 35, 0.9), rgba(7, 15, 28, 0.96)),
+    radial-gradient(circle at 85% 16%, rgba(108, 51, 71, 0.12), transparent 24%),
+    radial-gradient(circle at 16% 14%, rgba(49, 79, 109, 0.18), transparent 26%);
+  box-shadow: var(--shadow-deep);
+  text-align: center;
+}
+
+.lock-card__title {
+  margin-top: 0.9rem;
+  font-size: clamp(2.8rem, 8vw, 4rem);
+  line-height: 0.95;
+}
+
+.lock-card__copy {
+  max-width: 24rem;
+  margin: 1rem auto 0;
+  line-height: 1.75;
+  color: var(--text-soft);
+}
+
+.lock-form {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.4rem;
+  text-align: left;
+}
+
+.lock-form__label {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lock-form__input {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(214, 225, 240, 0.14);
+  border-radius: 16px;
+  background: rgba(6, 14, 27, 0.72);
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.lock-form__input:focus {
+  border-color: rgba(158, 186, 224, 0.28);
+  box-shadow: 0 0 0 4px rgba(92, 132, 180, 0.1);
+}
+
+.lock-form__message {
+  min-height: 1.4rem;
+  margin: 0;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.84rem;
+}
+
+.lock-form__message.is-error {
+  color: rgba(232, 202, 212, 0.88);
+}
+
+@media (max-width: 640px) {
+  .lock-card {
+    padding: 1.2rem;
+    border-radius: 28px;
+  }
+}
