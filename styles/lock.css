@@ -17,8 +17,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 14%, rgba(139, 171, 216, 0.14), transparent 18%),
-    radial-gradient(circle at 20% 80%, rgba(108, 51, 71, 0.1), transparent 22%),
+    radial-gradient(circle at 50% 14%, rgba(139, 171, 216, 0.16), transparent 20%),
+    radial-gradient(circle at 20% 80%, rgba(116, 68, 90, 0.12), transparent 24%),
+    radial-gradient(circle at 84% 24%, rgba(108, 135, 153, 0.12), transparent 24%),
     linear-gradient(180deg, rgba(6, 12, 24, 0.24), rgba(3, 7, 14, 0.52));
 }
 
@@ -30,9 +31,9 @@
   border: 1px solid rgba(214, 225, 240, 0.14);
   border-radius: var(--radius-xl);
   background:
-    linear-gradient(180deg, rgba(10, 19, 35, 0.9), rgba(7, 15, 28, 0.96)),
-    radial-gradient(circle at 85% 16%, rgba(108, 51, 71, 0.12), transparent 24%),
-    radial-gradient(circle at 16% 14%, rgba(49, 79, 109, 0.18), transparent 26%);
+    linear-gradient(180deg, rgba(10, 21, 39, 0.9), rgba(7, 15, 29, 0.96)),
+    radial-gradient(circle at 85% 16%, rgba(116, 68, 90, 0.14), transparent 26%),
+    radial-gradient(circle at 16% 14%, rgba(108, 135, 153, 0.2), transparent 28%);
   box-shadow: var(--shadow-deep);
   text-align: center;
 }
@@ -69,15 +70,17 @@
   padding: 0.95rem 1rem;
   border: 1px solid rgba(214, 225, 240, 0.14);
   border-radius: 16px;
-  background: rgba(6, 14, 27, 0.72);
+  background:
+    linear-gradient(180deg, rgba(8, 17, 32, 0.74), rgba(6, 14, 27, 0.72)),
+    radial-gradient(circle at 86% 14%, rgba(116, 68, 90, 0.08), transparent 24%);
   color: var(--text-main);
   outline: none;
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
 .lock-form__input:focus {
-  border-color: rgba(158, 186, 224, 0.28);
-  box-shadow: 0 0 0 4px rgba(92, 132, 180, 0.1);
+  border-color: rgba(158, 186, 224, 0.3);
+  box-shadow: 0 0 0 4px rgba(92, 132, 180, 0.1), 0 0 0 1px rgba(116, 68, 90, 0.2);
 }
 
 .lock-form__message {

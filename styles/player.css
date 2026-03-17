@@ -14,8 +14,9 @@
   border: 1px solid rgba(214, 225, 240, 0.12);
   border-radius: 22px;
   background:
-    linear-gradient(180deg, rgba(9, 17, 31, 0.88), rgba(7, 14, 26, 0.94)),
-    radial-gradient(circle at 84% 16%, rgba(108, 51, 71, 0.08), transparent 22%);
+    linear-gradient(180deg, rgba(10, 22, 41, 0.9), rgba(7, 15, 29, 0.94)),
+    radial-gradient(circle at 84% 16%, rgba(116, 68, 90, 0.12), transparent 24%),
+    radial-gradient(circle at 16% 18%, rgba(108, 135, 153, 0.12), transparent 26%);
   backdrop-filter: blur(14px);
   box-shadow: var(--shadow-deep);
 }
@@ -26,9 +27,9 @@
   border-radius: 14px;
   overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(173, 128, 72, 0.72), rgba(54, 97, 132, 0.56)),
-    radial-gradient(circle at 24% 20%, rgba(234, 191, 115, 0.56), transparent 18%),
-    linear-gradient(180deg, rgba(19, 35, 60, 0.9), rgba(11, 20, 37, 0.98));
+    linear-gradient(135deg, rgba(111, 142, 165, 0.62), rgba(56, 98, 134, 0.56)),
+    radial-gradient(circle at 24% 20%, rgba(152, 178, 199, 0.42), transparent 20%),
+    linear-gradient(180deg, rgba(20, 38, 64, 0.9), rgba(11, 21, 38, 0.98));
 }
 
 .music-player__art::before {
@@ -161,7 +162,9 @@
   flex: none;
   border: 0;
   border-radius: 50%;
-  background: linear-gradient(180deg, rgba(245, 241, 236, 0.98), rgba(225, 228, 235, 0.92));
+  background:
+    linear-gradient(180deg, rgba(242, 238, 233, 0.98), rgba(221, 226, 234, 0.92)),
+    radial-gradient(circle at 82% 16%, rgba(116, 68, 90, 0.12), transparent 34%);
   color: #09111e;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
 }

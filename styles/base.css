@@ -1,9 +1,20 @@
 :root {
-  --bg-deep: #07111f;
-  --bg-midnight: #0b1830;
-  --bg-sedge: #314f6d;
-  --bg-sedge-soft: rgba(73, 112, 148, 0.26);
+  --bg-deep: #061120;
+  --bg-midnight: #0b1e3b;
+  --bg-sedge: #4d6b7e;
+  --bg-sedge-soft: rgba(104, 136, 158, 0.28);
   --bg-mist: #8b99ae;
+  --blue-950: #040d1a;
+  --blue-900: #08162b;
+  --blue-850: #0c2142;
+  --blue-700: #28517f;
+  --sedge-600: #4f6d80;
+  --sedge-500: #6c8799;
+  --burgundy-700: #5c2c3f;
+  --burgundy-600: #74445a;
+  --burgundy-soft: rgba(116, 68, 90, 0.18);
+  --sedge-soft: rgba(108, 135, 153, 0.2);
+  --blue-soft: rgba(103, 145, 195, 0.2);
   --text-main: #f5f1ec;
   --text-soft: rgba(245, 241, 236, 0.76);
   --text-faint: rgba(245, 241, 236, 0.5);
@@ -39,10 +50,10 @@ body {
   font-family: "Manrope", sans-serif;
   color: var(--text-main);
   background:
-    radial-gradient(circle at top, rgba(122, 156, 203, 0.12), transparent 20%),
-    radial-gradient(circle at 14% 78%, rgba(108, 51, 71, 0.1), transparent 18%),
-    radial-gradient(circle at 84% 24%, rgba(49, 79, 109, 0.18), transparent 24%),
-    linear-gradient(180deg, #06101c 0%, #081322 40%, #09111e 100%);
+    radial-gradient(circle at top, rgba(118, 161, 214, 0.14), transparent 24%),
+    radial-gradient(circle at 16% 80%, var(--burgundy-soft), transparent 22%),
+    radial-gradient(circle at 84% 24%, var(--sedge-soft), transparent 28%),
+    linear-gradient(180deg, var(--blue-950) 0%, var(--blue-900) 42%, var(--bg-deep) 100%);
 }
 
 button,
@@ -104,11 +115,11 @@ body.is-locked .experience-shell {
 .global-atmosphere__aurora {
   inset: -12%;
   background:
-    radial-gradient(ellipse at 18% 34%, rgba(118, 157, 214, 0.18), transparent 34%),
-    radial-gradient(ellipse at 28% 68%, rgba(60, 96, 132, 0.14), transparent 24%),
-    radial-gradient(ellipse at 82% 24%, rgba(84, 119, 173, 0.12), transparent 30%),
-    radial-gradient(ellipse at 54% 72%, rgba(105, 62, 89, 0.1), transparent 28%),
-    radial-gradient(ellipse at 72% 78%, rgba(108, 51, 71, 0.08), transparent 22%);
+    radial-gradient(ellipse at 18% 34%, rgba(118, 161, 214, 0.2), transparent 34%),
+    radial-gradient(ellipse at 28% 68%, rgba(79, 109, 128, 0.16), transparent 26%),
+    radial-gradient(ellipse at 82% 24%, rgba(92, 131, 187, 0.14), transparent 30%),
+    radial-gradient(ellipse at 54% 72%, rgba(116, 68, 90, 0.11), transparent 28%),
+    radial-gradient(ellipse at 72% 78%, rgba(116, 68, 90, 0.09), transparent 22%);
   filter: blur(40px);
   opacity: 0.82;
   transform: translate3d(0, 0, 0) scale(1.05);
@@ -138,8 +149,8 @@ body.is-locked .experience-shell {
 
 .global-atmosphere__mist {
   background:
-    radial-gradient(circle at 12% 86%, rgba(108, 51, 71, 0.12), transparent 18%),
-    radial-gradient(circle at 82% 18%, rgba(86, 117, 162, 0.1), transparent 20%),
+    radial-gradient(circle at 12% 86%, rgba(116, 68, 90, 0.12), transparent 18%),
+    radial-gradient(circle at 82% 18%, rgba(98, 132, 178, 0.12), transparent 20%),
     linear-gradient(180deg, transparent 0%, rgba(4, 10, 19, 0.28) 100%);
   filter: blur(18px);
   transform: translate3d(0, 0, 0);
@@ -219,8 +230,9 @@ body.is-compact-motion .global-atmosphere__grain {
   border-radius: 999px;
   border: 1px solid rgba(214, 225, 240, 0.16);
   background:
-    linear-gradient(180deg, rgba(18, 34, 58, 0.88), rgba(10, 21, 39, 0.96)),
-    radial-gradient(circle at 85% 16%, rgba(108, 51, 71, 0.16), transparent 22%);
+    linear-gradient(180deg, rgba(20, 40, 70, 0.9), rgba(10, 23, 44, 0.96)),
+    radial-gradient(circle at 85% 16%, rgba(116, 68, 90, 0.18), transparent 24%),
+    radial-gradient(circle at 18% 18%, rgba(108, 135, 153, 0.12), transparent 26%);
   color: var(--text-main);
   box-shadow: var(--shadow-soft);
   transition:

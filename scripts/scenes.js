@@ -3,12 +3,13 @@ import { getAtmosphereTargets, getSceneTargets, wait } from "./utils.js";
 
 const SCENE_ORDER = ["welcome", "reveal", "keepsake", "note", "collage", "question", "response", "final"];
 
-export function createSceneController({ dom, state, sceneMap, audio, env, onSceneChange }) {
+export function createSceneController({ dom, state, sceneMap, audio, env, tracker, onSceneChange }) {
   const typedScenes = new Set();
   let keepsakeOpened = false;
   let isTransitioning = false;
   let isBeginning = false;
   let collageDriftTween = null;
+  let responseAdvanceTimer = null;
 
   bindResponses();
   bindMainActions();
@@ -124,9 +125,12 @@ export function createSceneController({ dom, state, sceneMap, audio, env, onScen
 
     responseCards.forEach((card) => {
       card.addEventListener("click", () => {
+        if (state.currentScene !== "response") return;
+
         responseCards.forEach((item) => item.classList.remove("is-selected"));
         card.classList.add("is-selected");
         responseEcho.textContent = card.dataset.followup || DEFAULT_RESPONSE_ECHO;
+        tracker?.captureResponse(card.textContent);
 
         if (env.hasGSAP && !env.reducedMotion) {
           gsap.killTweensOf(responseEcho);
@@ -136,12 +140,26 @@ export function createSceneController({ dom, state, sceneMap, audio, env, onScen
             { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", overwrite: "auto" }
           );
         }
+
+        if (responseAdvanceTimer) {
+          window.clearTimeout(responseAdvanceTimer);
+        }
+        responseAdvanceTimer = window.setTimeout(() => {
+          responseAdvanceTimer = null;
+          if (state.currentScene === "response" && !isTransitioning) {
+            goToScene("final");
+          }
+        }, env.compactMotion || env.lowPerfDevice ? 900 : 1100);
       });
     });
   }
 
   async function goToScene(name) {
     if (name === state.currentScene || isTransitioning) return;
+    if (responseAdvanceTimer) {
+      window.clearTimeout(responseAdvanceTimer);
+      responseAdvanceTimer = null;
+    }
 
     state.sceneToken += 1;
     const token = state.sceneToken;

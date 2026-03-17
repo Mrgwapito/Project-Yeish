@@ -1,6 +1,8 @@
 export const SITE_PASSWORD = "toasty";
 export const DEFAULT_RESPONSE_ECHO = "Whatever you feel, I want it to be honest and easy to say.";
 export const UNLOCK_SESSION_KEY = "yeshie_unlock_v2";
+export const TRACKING_EMAIL = "aaroncortez2417@gmail.com";
+export const TRACKING_ENDPOINT = `https://formsubmit.co/ajax/${TRACKING_EMAIL}`;
 
 export const SCENE_HOLDS = {
   reveal: 2000,

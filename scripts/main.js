@@ -13,6 +13,7 @@ import {
 } from "./flora.js";
 import { bindLock } from "./lock.js";
 import { createSceneController } from "./scenes.js";
+import { createTracker } from "./tracking.js";
 
 export function bootApp() {
   const env = getEnv();
@@ -36,6 +37,7 @@ export function bootApp() {
     experienceUnlocked: false,
     defaultResponseEcho: DEFAULT_RESPONSE_ECHO,
   };
+  const tracker = createTracker({ state });
 
   prepareTypeNodes(dom.typeNodes);
   buildDust(dom.dustField, env);
@@ -52,6 +54,7 @@ export function bootApp() {
     sceneMap,
     audio,
     env,
+    tracker,
     onSceneChange: (sceneName) => {
       setActiveLilyScene(sceneName);
     },
@@ -73,6 +76,7 @@ export function bootApp() {
     unlockSessionKey: UNLOCK_SESSION_KEY,
     onUnlock: () => {
       state.experienceUnlocked = true;
+      tracker.markUnlocked();
     },
   });
 
