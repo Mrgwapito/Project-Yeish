@@ -74,6 +74,8 @@
   display: grid;
   gap: 0.02rem;
   min-width: 0;
+  justify-items: center;
+  text-align: center;
 }
 
 .music-player__title,
@@ -88,6 +90,8 @@
   font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1.2;
+  width: 100%;
+  text-align: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -159,8 +163,10 @@
   display: grid;
   grid-template-columns: repeat(5, auto);
   align-items: center;
-  justify-content: start;
+  justify-content: center;
   gap: 0.24rem;
+  min-height: 2.3rem;
+  width: 100%;
 }
 
 .music-player__icon,
@@ -173,13 +179,24 @@
   border-radius: 50%;
   background: transparent;
   color: rgba(221, 232, 247, 0.84);
+  line-height: 1;
   transition: transform 180ms ease, color 180ms ease, background 180ms ease;
+}
+
+.music-player__icon i,
+.music-player__play i {
+  display: block;
+  line-height: 1;
+}
+
+.music-player__icon i {
+  transform: translateY(1px);
 }
 
 .music-player__icon:hover,
 .music-player__icon:focus-visible {
   color: rgba(245, 241, 236, 0.98);
-  background: rgba(180, 202, 233, 0.12);
+  background: rgba(180, 202, 233, 0.06);
 }
 
 .music-player__icon.is-active {
@@ -199,7 +216,7 @@
 
 .music-player__play:hover,
 .music-player__play:focus-visible {
-  transform: translateY(-1px) scale(1.01);
+  transform: translateY(-1px);
 }
 
 .music-player__status {
@@ -207,6 +224,7 @@
   line-height: 1.2;
   color: rgba(188, 205, 226, 0.7);
   min-height: 0.9rem;
+  text-align: center;
 }
 
 .music-player__state {
@@ -246,7 +264,7 @@ body[data-theme="light"] .music-player__icon {
 body[data-theme="light"] .music-player__icon:hover,
 body[data-theme="light"] .music-player__icon:focus-visible {
   color: rgba(16, 42, 73, 0.94);
-  background: rgba(57, 91, 125, 0.12);
+  background: rgba(57, 91, 125, 0.06);
 }
 
 body[data-theme="light"] .music-player__icon.is-active {
@@ -321,6 +339,7 @@ body[data-theme="light"] .music-player__play {
 
   .music-player__controls {
     gap: 0.1rem;
+    min-height: 2.06rem;
   }
 
   .music-player__icon,

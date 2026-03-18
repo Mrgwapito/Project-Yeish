@@ -25,6 +25,19 @@
     <link rel="stylesheet" href="styles/flora.css" />
   </head>
   <body class="is-locked" data-theme="light">
+    <button
+      class="theme-switch"
+      id="theme-toggle"
+      type="button"
+      aria-label="Switch to dark mode"
+    >
+      <span class="theme-switch__track" aria-hidden="true">
+        <i class="fa-solid fa-sun theme-switch__sun"></i>
+        <i class="fa-solid fa-moon theme-switch__moon"></i>
+        <span class="theme-switch__thumb"></span>
+      </span>
+    </button>
+
     <div class="lock-screen" id="lock-screen">
       <div class="lock-screen__veil"></div>
       <div class="lock-card">
@@ -61,19 +74,6 @@
         <div class="petal-fall" id="petal-fall"></div>
         <div class="dust-field" id="dust-field"></div>
       </div>
-
-      <button
-        class="theme-switch"
-        id="theme-toggle"
-        type="button"
-        aria-label="Switch to dark mode"
-      >
-        <span class="theme-switch__track" aria-hidden="true">
-          <i class="fa-solid fa-sun theme-switch__sun"></i>
-          <i class="fa-solid fa-moon theme-switch__moon"></i>
-          <span class="theme-switch__thumb"></span>
-        </span>
-      </button>
 
       <aside class="music-player" id="music-player" aria-label="Song player">
         <audio id="love-song" preload="metadata">

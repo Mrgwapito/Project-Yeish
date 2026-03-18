@@ -70,7 +70,6 @@ function unlockExperience(dom, env, onUnlock, options = {}) {
   if (options.instant) {
     dom.lockScreen.classList.add("is-hidden");
     dom.lockScreen.style.display = "none";
-    dom.beginButton?.focus();
     return;
   }
 
@@ -82,7 +81,6 @@ function unlockExperience(dom, env, onUnlock, options = {}) {
       onComplete: () => {
         dom.lockScreen.classList.add("is-hidden");
         dom.lockScreen.style.display = "none";
-        dom.beginButton?.focus();
       },
     });
     return;
@@ -90,7 +88,6 @@ function unlockExperience(dom, env, onUnlock, options = {}) {
 
   dom.lockScreen.classList.add("is-hidden");
   dom.lockScreen.style.display = "none";
-  dom.beginButton?.focus();
 }
 
 function getStorage() {
