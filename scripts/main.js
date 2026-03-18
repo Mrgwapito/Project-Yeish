@@ -29,7 +29,6 @@ import { createTracker } from "./tracking.js";
 export function bootApp() {
   const env = getEnv();
   const dom = getDom();
-  const resumeState = readResumeState(RESUME_STATE_KEY);
   setupViewportSizing();
   const compactMode = env.compactMotion || env.lowPerfDevice;
   const canAnimateWelcome = env.hasGSAP && !env.reducedMotion;
@@ -55,7 +54,7 @@ export function bootApp() {
     requestedSongLoad: false,
     experienceUnlocked: false,
     defaultResponseEcho: DEFAULT_RESPONSE_ECHO,
-    selectedResponseIndex: Number.isInteger(resumeState.responseIndex) ? resumeState.responseIndex : -1,
+    selectedResponseIndex: -1,
   };
   const tracker = createTracker({ state });
 
@@ -133,16 +132,7 @@ export function bootApp() {
     onUnlock: async () => {
       state.experienceUnlocked = true;
       tracker.markUnlocked();
-      const resumeScene = normalizeResumeScene(resumeState.scene);
-      const shouldResume = Boolean(resumeScene && resumeScene !== "welcome");
-      startWelcomeVisuals({ skipEntrance: shouldResume });
-
-      if (shouldResume || state.selectedResponseIndex >= 0) {
-        await scenes.hydrateFromResume({
-          scene: resumeScene,
-          responseIndex: state.selectedResponseIndex,
-        });
-      }
+      startWelcomeVisuals({ skipEntrance: false });
 
       adaptiveBudget.start();
       persistExperienceState();
@@ -270,13 +260,6 @@ function sampleFps(durationMs = 1200) {
 
     window.requestAnimationFrame(tick);
   });
-}
-
-function normalizeResumeScene(scene) {
-  const value = String(scene || "");
-  if (!value) return "";
-  const allowed = new Set(["welcome", "reveal", "keepsake", "note", "collage", "question", "response", "final"]);
-  return allowed.has(value) ? value : "";
 }
 
 function readResumeState(key) {
