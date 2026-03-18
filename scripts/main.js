@@ -1,6 +1,8 @@
 import { DEFAULT_RESPONSE_ECHO, SITE_PASSWORD, UNLOCK_SESSION_KEY, getEnv } from "./config.js";
 import { getDom } from "./dom.js";
 import { createAudioController } from "./audio.js";
+import { applyContent } from "./content.js";
+import { initTheme } from "./theme.js";
 import {
   setupAmbientMotion,
   setActiveLilyScene,
@@ -22,6 +24,8 @@ export function bootApp() {
   const compactMode = env.compactMotion || env.lowPerfDevice;
   const canAnimateWelcome = env.hasGSAP && !env.reducedMotion;
   let welcomeIntroStarted = false;
+  initTheme(dom);
+  applyContent(dom);
 
   if (env.hasGSAP) {
     gsap.config({ autoSleep: 60, force3D: true, nullTargetWarn: false });

@@ -56,6 +56,20 @@ body {
     linear-gradient(180deg, var(--blue-950) 0%, var(--blue-900) 42%, var(--bg-deep) 100%);
 }
 
+body[data-theme="light"] {
+  --text-main: #122945;
+  --text-soft: rgba(18, 41, 69, 0.78);
+  --text-faint: rgba(18, 41, 69, 0.52);
+  --line-soft: rgba(57, 91, 125, 0.18);
+  --shadow-deep: 0 18px 44px rgba(63, 92, 125, 0.18);
+  --shadow-soft: 0 14px 30px rgba(63, 92, 125, 0.15);
+  background:
+    radial-gradient(circle at top, rgba(147, 180, 220, 0.24), transparent 34%),
+    radial-gradient(circle at 16% 80%, rgba(116, 68, 90, 0.14), transparent 25%),
+    radial-gradient(circle at 84% 24%, rgba(108, 135, 153, 0.2), transparent 31%),
+    linear-gradient(180deg, #f6faff 0%, #dde9f7 54%, #c3d8ee 100%);
+}
+
 button,
 input,
 textarea,
@@ -77,6 +91,138 @@ button {
   width: 100%;
   height: 100svh;
   isolation: isolate;
+}
+
+.theme-switch {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top));
+  right: clamp(0.55rem, 2vw, 1rem);
+  z-index: 30;
+  width: 70px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 225, 240, 0.22);
+  background:
+    linear-gradient(180deg, rgba(17, 34, 58, 0.9), rgba(9, 20, 37, 0.94)),
+    radial-gradient(circle at 84% 16%, rgba(116, 68, 90, 0.14), transparent 30%);
+  padding: 0;
+  color: transparent;
+  box-shadow: 0 10px 24px rgba(4, 11, 22, 0.24);
+  transition: transform 180ms ease, border-color 180ms ease, opacity 180ms ease;
+}
+
+.theme-switch:hover,
+.theme-switch:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(214, 225, 240, 0.34);
+}
+
+.theme-switch__track {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.theme-switch__track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(17, 34, 58, 0.94), rgba(9, 20, 37, 0.96)),
+    radial-gradient(circle at 84% 16%, rgba(116, 68, 90, 0.14), transparent 30%);
+  transform: scaleX(var(--theme-preview, 0));
+  transform-origin: right center;
+  opacity: 0.92;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.theme-switch__sun,
+.theme-switch__moon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.72rem;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.theme-switch__sun {
+  left: 10px;
+  color: rgba(250, 206, 110, 0.94);
+  text-shadow: 0 0 10px rgba(248, 194, 91, 0.34);
+  opacity: 0.98;
+}
+
+.theme-switch__moon {
+  right: 10px;
+  color: rgba(201, 217, 240, 0.95);
+  text-shadow: 0 0 9px rgba(154, 177, 213, 0.28);
+  opacity: 0.5;
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background:
+    linear-gradient(180deg, rgba(255, 247, 220, 0.98), rgba(244, 214, 131, 0.94)),
+    radial-gradient(circle at 32% 32%, rgba(255, 255, 255, 0.72), transparent 38%);
+  box-shadow: 0 8px 16px rgba(131, 89, 43, 0.24);
+  transition: transform 240ms ease, background 240ms ease, box-shadow 240ms ease;
+  z-index: 3;
+}
+
+body[data-theme="dark"] .theme-switch {
+  border-color: rgba(38, 64, 96, 0.48);
+  background:
+    linear-gradient(180deg, rgba(18, 35, 57, 0.94), rgba(10, 22, 40, 0.96)),
+    radial-gradient(circle at 84% 16%, rgba(116, 68, 90, 0.16), transparent 30%);
+  box-shadow: 0 12px 24px rgba(11, 24, 40, 0.26);
+}
+
+body[data-theme="dark"] .theme-switch__thumb {
+  transform: translateX(38px);
+  background:
+    linear-gradient(180deg, rgba(233, 241, 252, 0.96), rgba(197, 214, 236, 0.9)),
+    radial-gradient(circle at 34% 32%, rgba(255, 255, 255, 0.72), transparent 38%);
+  box-shadow: 0 8px 16px rgba(6, 14, 26, 0.28);
+}
+
+body[data-theme="dark"] .theme-switch__track::before {
+  background:
+    linear-gradient(180deg, rgba(244, 250, 255, 0.96), rgba(225, 237, 249, 0.94)),
+    radial-gradient(circle at 84% 16%, rgba(116, 68, 90, 0.1), transparent 30%);
+  transform-origin: left center;
+}
+
+body[data-theme="dark"] .theme-switch__sun {
+  opacity: 0.48;
+}
+
+body[data-theme="dark"] .theme-switch__moon {
+  opacity: 1;
+}
+
+body[data-theme="light"] .global-atmosphere__aurora {
+  opacity: 0.88;
+  filter: blur(34px);
+}
+
+body[data-theme="light"] .global-atmosphere__bloom {
+  opacity: 0.48;
+}
+
+body[data-theme="light"] .global-atmosphere__mist {
+  opacity: 0.9;
+  filter: blur(16px);
 }
 
 body.is-locked .experience-shell {
@@ -252,6 +398,25 @@ body.is-compact-motion .global-atmosphere__grain {
   box-shadow: 0 20px 38px rgba(4, 11, 22, 0.24);
 }
 
+body[data-theme="light"] .lock-form__button,
+body[data-theme="light"] .scene__button {
+  border-color: rgba(57, 91, 125, 0.24);
+  background:
+    linear-gradient(180deg, rgba(243, 249, 255, 0.96), rgba(226, 238, 249, 0.94)),
+    radial-gradient(circle at 85% 16%, rgba(116, 68, 90, 0.1), transparent 24%),
+    radial-gradient(circle at 18% 18%, rgba(108, 135, 153, 0.14), transparent 26%);
+  color: rgba(16, 38, 65, 0.94);
+  box-shadow: 0 12px 24px rgba(64, 94, 127, 0.16);
+}
+
+body[data-theme="light"] .lock-form__button:hover,
+body[data-theme="light"] .lock-form__button:focus-visible,
+body[data-theme="light"] .scene__button:hover,
+body[data-theme="light"] .scene__button:focus-visible {
+  border-color: rgba(57, 91, 125, 0.34);
+  box-shadow: 0 16px 28px rgba(64, 94, 127, 0.2);
+}
+
 .scene__button:disabled {
   opacity: 0.72;
   cursor: default;
@@ -378,6 +543,37 @@ body.is-compact-motion .global-atmosphere__grain {
 }
 
 @media (max-width: 640px) {
+  .theme-switch {
+    width: 58px;
+    height: 30px;
+    top: calc(0.46rem + env(safe-area-inset-top));
+    right: 0.45rem;
+  }
+
+  .theme-switch__sun,
+  .theme-switch__moon {
+    font-size: 0.64rem;
+  }
+
+  .theme-switch__sun {
+    left: 8px;
+  }
+
+  .theme-switch__moon {
+    right: 8px;
+  }
+
+  .theme-switch__thumb {
+    width: 22px;
+    height: 22px;
+    top: 3px;
+    left: 3px;
+  }
+
+  body[data-theme="dark"] .theme-switch__thumb {
+    transform: translateX(30px);
+  }
+
   .lock-card__eyebrow,
   .scene__eyebrow,
   .note-card__eyebrow,

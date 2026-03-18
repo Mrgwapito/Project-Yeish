@@ -64,6 +64,60 @@
   will-change: transform, opacity;
 }
 
+body[data-theme="light"] .lily {
+  --petal-top: rgba(253, 244, 248, 0.96) !important;
+  --petal-mid: rgba(231, 193, 208, 0.84) !important;
+  --petal-base: rgba(150, 82, 108, 0.3) !important;
+  --petal-vein: rgba(120, 56, 81, 0.34) !important;
+  --core-light: rgba(250, 236, 241, 0.96) !important;
+  --core-wine: rgba(143, 64, 93, 0.88) !important;
+  opacity: clamp(0.36, calc(var(--alpha) + 0.22), 0.82);
+  filter: blur(calc(var(--blur) * 0.58)) saturate(1.22) contrast(1.1) drop-shadow(0 10px 20px rgba(96, 43, 66, 0.28));
+}
+
+body[data-theme="light"] .lily::before {
+  background:
+    radial-gradient(circle, rgba(200, 151, 171, 0.34), rgba(200, 151, 171, 0) 60%),
+    radial-gradient(circle at 50% 52%, rgba(154, 89, 115, 0.24), rgba(154, 89, 115, 0) 50%),
+    radial-gradient(circle at 50% 76%, rgba(83, 33, 53, 0.28), rgba(83, 33, 53, 0) 62%);
+}
+
+body[data-theme="light"] .lily__halo {
+  border-color: rgba(164, 95, 122, 0.34);
+  background: radial-gradient(circle, rgba(178, 111, 137, 0.24), rgba(178, 111, 137, 0.04) 66%, rgba(178, 111, 137, 0) 100%);
+}
+
+body[data-theme="light"] .petal {
+  border-color: rgba(173, 93, 124, 0.38);
+  box-shadow:
+    inset 0 0 16px rgba(255, 255, 255, 0.34),
+    inset 0 -10px 14px rgba(124, 70, 93, 0.18),
+    0 7px 14px rgba(75, 33, 51, 0.24);
+}
+
+body[data-theme="light"] .falling-lily {
+  opacity: clamp(0.28, calc(var(--fall-alpha, 0.3) * 1.65), 0.78);
+  filter: blur(calc(var(--fall-blur, 0px) * 0.55));
+  background:
+    radial-gradient(circle at 50% 50%, rgba(248, 226, 235, 0.9), rgba(248, 226, 235, 0) 58%),
+    conic-gradient(
+      from 10deg,
+      rgba(226, 164, 188, 0.96) 0deg 24deg,
+      rgba(226, 164, 188, 0) 24deg 60deg,
+      rgba(212, 142, 170, 0.92) 60deg 84deg,
+      rgba(212, 142, 170, 0) 84deg 120deg,
+      rgba(190, 111, 143, 0.9) 120deg 144deg,
+      rgba(190, 111, 143, 0) 144deg 180deg,
+      rgba(183, 101, 136, 0.9) 180deg 204deg,
+      rgba(183, 101, 136, 0) 204deg 240deg,
+      rgba(200, 124, 153, 0.9) 240deg 264deg,
+      rgba(200, 124, 153, 0) 264deg 300deg,
+      rgba(230, 174, 194, 0.95) 300deg 324deg,
+      rgba(230, 174, 194, 0) 324deg 360deg
+    );
+  box-shadow: 0 0 10px rgba(168, 95, 122, 0.2);
+}
+
 .lily.is-static .petal,
 .lily.is-static .lily__core {
   animation: none;

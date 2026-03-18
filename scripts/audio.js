@@ -1,10 +1,16 @@
 import { formatTime } from "./utils.js";
 
+const SEEK_STEP_SECONDS = 10;
+
 export function createAudioController({ dom, state }) {
   const {
     loveSong,
     audioStatus,
     playerToggle,
+    playerBackward,
+    playerForward,
+    shuffleToggle,
+    loopToggle,
     musicState,
     seekBar,
     currentTimeLabel,
@@ -14,12 +20,14 @@ export function createAudioController({ dom, state }) {
   if (!loveSong || !audioStatus || !playerToggle || !seekBar || !currentTimeLabel || !durationTimeLabel) {
     return { startSong: async () => false };
   }
+
   let lastSeekPaintAt = 0;
+  let shuffleMode = false;
 
   loveSong.addEventListener("canplay", () => {
     state.songReady = true;
     state.songMissing = false;
-    audioStatus.textContent = "Ready.";
+    audioStatus.textContent = "Ready when you are.";
     if (musicState) musicState.textContent = "Ready";
     updateDuration();
   });
@@ -32,7 +40,7 @@ export function createAudioController({ dom, state }) {
 
   loveSong.addEventListener("playing", () => {
     syncPlayButton(true);
-    audioStatus.textContent = "Full song playing.";
+    audioStatus.textContent = "Now playing.";
     if (musicState) musicState.textContent = "Playing";
   });
 
@@ -40,7 +48,7 @@ export function createAudioController({ dom, state }) {
     if (loveSong.ended) return;
     syncPlayButton(false);
     if (!state.songMissing) {
-      audioStatus.textContent = "The song is paused. You can start it again anytime.";
+      audioStatus.textContent = "Paused.";
     }
     if (musicState) musicState.textContent = "Paused";
   });
@@ -58,14 +66,36 @@ export function createAudioController({ dom, state }) {
     state.songMissing = true;
     state.songReady = false;
     syncPlayButton(false);
-    playerToggle.textContent = "x";
     playerToggle.disabled = true;
+    if (playerBackward) playerBackward.disabled = true;
+    if (playerForward) playerForward.disabled = true;
+    if (shuffleToggle) shuffleToggle.disabled = true;
+    if (loopToggle) loopToggle.disabled = true;
     audioStatus.textContent = "I could not load the local song from the music folder yet.";
     if (musicState) musicState.textContent = "Song unavailable";
   });
 
   playerToggle.addEventListener("click", async () => {
     await toggleSong(true);
+  });
+
+  playerBackward?.addEventListener("click", () => {
+    seekBy(-SEEK_STEP_SECONDS);
+  });
+
+  playerForward?.addEventListener("click", () => {
+    seekBy(SEEK_STEP_SECONDS);
+  });
+
+  shuffleToggle?.addEventListener("click", () => {
+    shuffleMode = !shuffleMode;
+    syncShuffleButton();
+  });
+
+  loopToggle?.addEventListener("click", () => {
+    loveSong.loop = !loveSong.loop;
+    syncLoopButton();
+    audioStatus.textContent = loveSong.loop ? "Loop enabled." : "Loop disabled.";
   });
 
   seekBar.addEventListener("input", () => {
@@ -77,6 +107,11 @@ export function createAudioController({ dom, state }) {
     loveSong.currentTime = (Number(seekBar.value) / 100) * loveSong.duration;
     updateSeek(true);
   });
+
+  syncShuffleButton();
+  syncLoopButton();
+  syncPlayButton(false);
+  updateSeek(true);
 
   return { startSong };
 
@@ -112,8 +147,32 @@ export function createAudioController({ dom, state }) {
 
   function syncPlayButton(isPlaying) {
     playerToggle.disabled = state.songMissing;
-    playerToggle.textContent = state.songMissing ? "x" : isPlaying ? "||" : ">";
+    setButtonIcon(
+      playerToggle,
+      state.songMissing ? "fa-solid fa-xmark" : isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play"
+    );
     playerToggle.setAttribute("aria-label", isPlaying ? "Pause song" : "Play song");
+    playerToggle.setAttribute("aria-pressed", String(isPlaying));
+    playerToggle.dataset.state = isPlaying ? "playing" : "paused";
+  }
+
+  function syncShuffleButton() {
+    if (!shuffleToggle) return;
+    shuffleToggle.classList.toggle("is-active", shuffleMode);
+    shuffleToggle.setAttribute("aria-pressed", String(shuffleMode));
+  }
+
+  function syncLoopButton() {
+    if (!loopToggle) return;
+    loopToggle.classList.toggle("is-active", loveSong.loop);
+    loopToggle.setAttribute("aria-pressed", String(loveSong.loop));
+  }
+
+  function seekBy(seconds) {
+    if (!Number.isFinite(loveSong.duration) || loveSong.duration <= 0) return;
+    const nextTime = Math.max(0, Math.min(loveSong.duration, loveSong.currentTime + seconds));
+    loveSong.currentTime = nextTime;
+    updateSeek(true);
   }
 
   function updateDuration() {
@@ -136,4 +195,16 @@ export function createAudioController({ dom, state }) {
     seekBar.value = String(value);
     seekBar.style.setProperty("--seek-fill", `${value}%`);
   }
+}
+
+function setButtonIcon(button, iconClass) {
+  if (!button) return;
+  let icon = button.querySelector("i");
+  if (!icon) {
+    icon = document.createElement("i");
+    icon.setAttribute("aria-hidden", "true");
+    button.textContent = "";
+    button.appendChild(icon);
+  }
+  icon.className = iconClass;
 }

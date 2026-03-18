@@ -1,9 +1,10 @@
 import { normalizePassword } from "./utils.js";
+import { CONTENT } from "./content.js";
 
 export function bindLock({ dom, env, sitePassword, unlockSessionKey, onUnlock }) {
   const { lockForm, passwordInput, lockMessage } = dom;
   const normalizedSitePassword = normalizePassword(sitePassword || "");
-  const defaultHint = "Hint: one of your cat names.";
+  const defaultHint = CONTENT.lock.defaultHint;
   let failedAttempts = 0;
 
   if (hasUnlockSession(unlockSessionKey)) {
@@ -52,9 +53,9 @@ export function bindLock({ dom, env, sitePassword, unlockSessionKey, onUnlock })
 }
 
 function getFailedHint(attempts) {
-  if (attempts === 1) return "Maybe the other one.";
-  if (attempts === 2) return "Try the other one.";
-  return "Hint: your playlist name.";
+  if (attempts === 1) return CONTENT.lock.wrongHints[0] || CONTENT.lock.defaultHint;
+  if (attempts === 2) return CONTENT.lock.wrongHints[1] || CONTENT.lock.defaultHint;
+  return CONTENT.lock.wrongHints[2] || CONTENT.lock.defaultHint;
 }
 
 function unlockExperience(dom, env, onUnlock, options = {}) {
