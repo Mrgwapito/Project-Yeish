@@ -21,6 +21,7 @@ import { createTracker } from "./tracking.js";
 export function bootApp() {
   const env = getEnv();
   const dom = getDom();
+  setupViewportSizing();
   const compactMode = env.compactMotion || env.lowPerfDevice;
   const canAnimateWelcome = env.hasGSAP && !env.reducedMotion;
   let welcomeIntroStarted = false;
@@ -120,4 +121,30 @@ export function bootApp() {
   if (!state.experienceUnlocked && !env.compactMotion) {
     dom.passwordInput?.focus();
   }
+}
+
+function setupViewportSizing() {
+  const root = document.documentElement;
+  let frame = 0;
+
+  const commit = () => {
+    frame = 0;
+    const vv = window.visualViewport;
+    const height = vv?.height || window.innerHeight;
+    const topOffset = vv?.offsetTop || 0;
+
+    root.style.setProperty("--app-vh", `${Math.max(320, Math.round(height))}px`);
+    root.style.setProperty("--app-vv-top", `${Math.max(0, Math.round(topOffset))}px`);
+  };
+
+  const queueCommit = () => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(commit);
+  };
+
+  commit();
+  window.addEventListener("resize", queueCommit, { passive: true });
+  window.addEventListener("orientationchange", queueCommit, { passive: true });
+  window.visualViewport?.addEventListener("resize", queueCommit, { passive: true });
+  window.visualViewport?.addEventListener("scroll", queueCommit, { passive: true });
 }

@@ -1,4 +1,6 @@
 :root {
+  --app-vh: 100dvh;
+  --app-vv-top: 0px;
   --bg-deep: #061120;
   --bg-midnight: #0b1e3b;
   --bg-sedge: #4d6b7e;
@@ -42,7 +44,7 @@ body {
   margin: 0;
   width: 100%;
   height: 100%;
-  min-height: 100dvh;
+  min-height: var(--app-vh, 100dvh);
   overflow-x: hidden;
 }
 
@@ -91,13 +93,13 @@ button {
 .experience-shell {
   position: relative;
   width: 100%;
-  height: 100dvh;
+  height: var(--app-vh, 100dvh);
   isolation: isolate;
 }
 
 .theme-switch {
   position: fixed;
-  top: calc(0.6rem + env(safe-area-inset-top));
+  top: calc(0.6rem + env(safe-area-inset-top) + var(--app-vv-top, 0px));
   right: clamp(0.55rem, 2vw, 1rem);
   z-index: 30;
   width: 70px;
@@ -396,9 +398,7 @@ body.is-compact-motion .global-atmosphere__grain {
     opacity 220ms ease;
 }
 
-.lock-form__button:hover,
 .lock-form__button:focus-visible,
-.scene__button:hover,
 .scene__button:focus-visible {
   transform: translateY(-2px);
   border-color: rgba(214, 225, 240, 0.28);
@@ -416,9 +416,7 @@ body[data-theme="light"] .scene__button {
   box-shadow: 0 12px 24px rgba(64, 94, 127, 0.16);
 }
 
-body[data-theme="light"] .lock-form__button:hover,
 body[data-theme="light"] .lock-form__button:focus-visible,
-body[data-theme="light"] .scene__button:hover,
 body[data-theme="light"] .scene__button:focus-visible {
   border-color: rgba(57, 91, 125, 0.34);
   box-shadow: 0 16px 28px rgba(64, 94, 127, 0.2);
@@ -557,7 +555,7 @@ body[data-theme="light"] .scene__button:focus-visible {
   .theme-switch {
     width: 58px;
     height: 30px;
-    top: calc(0.46rem + env(safe-area-inset-top));
+    top: calc(0.46rem + env(safe-area-inset-top) + var(--app-vv-top, 0px));
     right: 0.45rem;
   }
 
@@ -607,6 +605,21 @@ body[data-theme="light"] .scene__button:focus-visible {
 
   .global-atmosphere__bloom {
     filter: blur(38px);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lock-form__button:hover,
+  .scene__button:hover {
+    transform: translateY(-2px);
+    border-color: rgba(214, 225, 240, 0.28);
+    box-shadow: 0 20px 38px rgba(4, 11, 22, 0.24);
+  }
+
+  body[data-theme="light"] .lock-form__button:hover,
+  body[data-theme="light"] .scene__button:hover {
+    border-color: rgba(57, 91, 125, 0.34);
+    box-shadow: 0 16px 28px rgba(64, 94, 127, 0.2);
   }
 }
 
