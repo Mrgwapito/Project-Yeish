@@ -3,7 +3,7 @@ import { CONTENT } from "./content.js";
 import { getAtmosphereTargets, getSceneTargets, wait } from "./utils.js";
 
 const SCENE_ORDER = ["welcome", "reveal", "keepsake", "note", "collage", "question", "response", "final"];
-const PLAYER_COMPACT_SCENES = new Set(["question", "response"]);
+const PLAYER_COMPACT_SCENES = new Set();
 
 export function createSceneController({ dom, state, sceneMap, audio, env, tracker, onSceneChange, onStateChange }) {
   const typedScenes = new Set();
