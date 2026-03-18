@@ -1,9 +1,11 @@
 import { DEFAULT_RESPONSE_ECHO } from "./config.js";
+import { CONTENT } from "./content.js";
 import { getAtmosphereTargets, getSceneTargets, wait } from "./utils.js";
 
 const SCENE_ORDER = ["welcome", "reveal", "keepsake", "note", "collage", "question", "response", "final"];
+const PLAYER_COMPACT_SCENES = new Set(["question", "response"]);
 
-export function createSceneController({ dom, state, sceneMap, audio, env, tracker, onSceneChange }) {
+export function createSceneController({ dom, state, sceneMap, audio, env, tracker, onSceneChange, onStateChange }) {
   const typedScenes = new Set();
   let keepsakeOpened = false;
   let isTransitioning = false;
@@ -15,10 +17,16 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
   bindResponses();
   bindMainActions();
   bindNavActions();
+  applyPlayerCompactState(state.currentScene);
+  hydrateResponseSelection();
+  if (!Number.isInteger(state.selectedResponseIndex) || state.selectedResponseIndex < 0) {
+    setFinalLineText(CONTENT.final.line);
+  }
   updateNavState();
 
   return {
     goToScene,
+    hydrateFromResume,
     showWelcomeFallback,
   };
 
@@ -115,6 +123,107 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     dom.sceneProgress.textContent = `${safeIndex + 1} / ${SCENE_ORDER.length}`;
   }
 
+  function emitStateChange() {
+    onStateChange?.({
+      scene: state.currentScene,
+      responseIndex: Number.isInteger(state.selectedResponseIndex) ? state.selectedResponseIndex : -1,
+      responseEndingKey: state.selectedEndingKey || "",
+    });
+  }
+
+  function applyPlayerCompactState(sceneName) {
+    const compact = PLAYER_COMPACT_SCENES.has(sceneName);
+    dom.musicPlayer?.classList.toggle("is-compact", compact);
+    dom.body.classList.toggle("is-player-compact", compact);
+  }
+
+  function getFinalLineForSelection(index = state.selectedResponseIndex) {
+    if (!Number.isInteger(index) || index < 0) return CONTENT.final.line;
+    const option = CONTENT.response.options[index];
+    const endingKey = option?.endingKey || "";
+    return CONTENT.final.variants?.[endingKey] || CONTENT.final.line;
+  }
+
+  function setFinalLineText(text) {
+    if (!dom.finalLine) return;
+    const nextText = String(text || CONTENT.final.line);
+    dom.finalLine.dataset.fullText = nextText;
+    if (state.currentScene === "final") {
+      dom.finalLine.textContent = nextText;
+      dom.finalLine.classList.remove("is-typing");
+    }
+  }
+
+  function hydrateResponseSelection() {
+    if (!Number.isInteger(state.selectedResponseIndex)) {
+      state.selectedResponseIndex = -1;
+      state.selectedEndingKey = "";
+      return;
+    }
+
+    if (state.selectedResponseIndex < 0 || state.selectedResponseIndex >= dom.responseCards.length) {
+      state.selectedResponseIndex = -1;
+      state.selectedEndingKey = "";
+      return;
+    }
+
+    applyResponseSelection(state.selectedResponseIndex, {
+      track: false,
+      animate: false,
+      autoAdvance: false,
+      markAsHydrated: true,
+    });
+  }
+
+  function applyResponseSelection(
+    index,
+    { track = true, animate = true, autoAdvance = true, markAsHydrated = false } = {}
+  ) {
+    const { responseCards, responseEcho } = dom;
+    const selectedCard = responseCards[index];
+    if (!selectedCard || !responseEcho) return;
+
+    responseCards.forEach((item) => item.classList.remove("is-selected"));
+    selectedCard.classList.add("is-selected");
+
+    const followup = selectedCard.dataset.followup || DEFAULT_RESPONSE_ECHO;
+    responseEcho.textContent = followup;
+    state.selectedResponseIndex = index;
+    state.selectedEndingKey = selectedCard.dataset.endingKey || "";
+    setFinalLineText(getFinalLineForSelection(index));
+    typedScenes.delete("final");
+
+    if (track) {
+      tracker?.captureResponse(selectedCard.textContent);
+    }
+
+    updateNavState();
+    emitStateChange();
+
+    if (animate && env.hasGSAP && !env.reducedMotion) {
+      gsap.killTweensOf(responseEcho);
+      gsap.fromTo(
+        responseEcho,
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", overwrite: "auto" }
+      );
+    }
+
+    if (!autoAdvance || markAsHydrated) {
+      return;
+    }
+
+    if (responseAdvanceTimer) {
+      window.clearTimeout(responseAdvanceTimer);
+    }
+    responseAdvanceTimer = window.setTimeout(() => {
+      responseAdvanceTimer = null;
+      if (state.currentScene === "response" && !isTransitioning) {
+        goToScene("final");
+      }
+    }, env.compactMotion || env.lowPerfDevice ? 900 : 1100);
+  }
+
   function nudgeKeepsake() {
     if (!env.hasGSAP || env.reducedMotion || !dom.keepsakeButton) return;
 
@@ -129,34 +238,15 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     const { responseCards, responseEcho } = dom;
     if (!responseCards.length || !responseEcho) return;
 
-    responseCards.forEach((card) => {
+    responseCards.forEach((card, index) => {
       card.addEventListener("click", () => {
         if (state.currentScene !== "response") return;
 
-        responseCards.forEach((item) => item.classList.remove("is-selected"));
-        card.classList.add("is-selected");
-        responseEcho.textContent = card.dataset.followup || DEFAULT_RESPONSE_ECHO;
-        tracker?.captureResponse(card.textContent);
-        updateNavState();
-
-        if (env.hasGSAP && !env.reducedMotion) {
-          gsap.killTweensOf(responseEcho);
-          gsap.fromTo(
-            responseEcho,
-            { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", overwrite: "auto" }
-          );
-        }
-
-        if (responseAdvanceTimer) {
-          window.clearTimeout(responseAdvanceTimer);
-        }
-        responseAdvanceTimer = window.setTimeout(() => {
-          responseAdvanceTimer = null;
-          if (state.currentScene === "response" && !isTransitioning) {
-            goToScene("final");
-          }
-        }, env.compactMotion || env.lowPerfDevice ? 900 : 1100);
+        applyResponseSelection(index, {
+          track: true,
+          animate: true,
+          autoAdvance: true,
+        });
       });
     });
   }
@@ -195,7 +285,9 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
 
     state.currentScene = name;
     dom.body.dataset.scene = name;
+    applyPlayerCompactState(name);
     onSceneChange?.(name);
+    emitStateChange();
     await runScene(name, token);
     updateNavState();
   }
@@ -286,11 +378,48 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
         enterResponseScene(token);
         break;
       case "final":
+        setFinalLineText(getFinalLineForSelection());
         await runTypedScene("final", token, 28);
         break;
       default:
         break;
     }
+  }
+
+  async function hydrateFromResume(resume = {}) {
+    const sceneName = normalizeSceneName(resume.scene);
+    const resumeIndex = Number.isInteger(resume.responseIndex) ? resume.responseIndex : -1;
+    const hasResumeResponse = resumeIndex >= 0 && resumeIndex < dom.responseCards.length;
+
+    if (hasResumeResponse) {
+      applyResponseSelection(resumeIndex, {
+        track: false,
+        animate: false,
+        autoAdvance: false,
+        markAsHydrated: true,
+      });
+    }
+
+    if (!sceneName || sceneName === "welcome") {
+      updateNavState();
+      return;
+    }
+
+    const targetIndex = SCENE_ORDER.indexOf(sceneName);
+    if (targetIndex < 0) return;
+
+    if (targetIndex >= SCENE_ORDER.indexOf("note")) {
+      keepsakeOpened = true;
+      dom.keepsakeButton?.classList.add("is-opened");
+    }
+
+    let targetScene = sceneName;
+    if (targetScene === "final" && !hasSelectedResponse()) {
+      targetScene = "response";
+    }
+
+    await goToScene(targetScene);
+    updateNavState();
   }
 
   async function runTypedScene(sceneName, token, speed, gap = 220) {
@@ -420,7 +549,14 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     const collageScene = sceneMap.get("collage");
     const strip = collageScene?.querySelector(".collage");
     const nextButton = collageScene?.querySelector(".collage-next");
+    const swipeHint = dom.collageSwipe;
+    const swipeDots = dom.collageSwipeDots;
+    const swipeText = dom.collageSwipeText;
     if (!strip) return;
+
+    if (swipeText) {
+      swipeText.textContent = "Swipe >";
+    }
 
     const mediaQuery = window.matchMedia("(max-width: 820px)");
     let enabled = mediaQuery.matches;
@@ -440,6 +576,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
         strip.classList.remove("is-dragging");
       }
       syncNextButtonState();
+      updateSwipeCue();
     };
 
     if (mediaQuery.addEventListener) {
@@ -454,6 +591,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
     strip.addEventListener("scroll", onScroll, { passive: true });
     nextButton?.addEventListener("click", onNextTap);
 
+    renderSwipeDots();
     syncNextButtonState();
 
     function onNextTap() {
@@ -465,6 +603,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
       const targetIndex = clamp(currentIndex + 1, 0, cards.length - 1);
       scrollCardIntoView(strip, cards[targetIndex]);
       syncNextButtonState(targetIndex);
+      updateSwipeCue(targetIndex);
       queueNextButtonSync(180);
     }
 
@@ -512,6 +651,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
         const nearest = findNearestCardIndex(strip);
         scrollCardIntoView(strip, cards[nearest]);
         syncNextButtonState(nearest);
+        updateSwipeCue(nearest);
       }, 120);
     }
 
@@ -555,6 +695,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
 
       scrollCardIntoView(strip, cards[targetIndex]);
       syncNextButtonState(targetIndex);
+      updateSwipeCue(targetIndex);
       queueNextButtonSync(180);
     }
 
@@ -565,21 +706,59 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
       buttonTimer = window.setTimeout(() => {
         buttonTimer = null;
         syncNextButtonState();
+        updateSwipeCue();
       }, delay);
     }
 
     function syncNextButtonState(indexOverride) {
-      if (!nextButton) return;
       const cards = getCards(strip);
       const hasMultipleCards = enabled && cards.length > 1;
+      if (nextButton) {
+        nextButton.disabled = !hasMultipleCards;
+      }
+
       if (!hasMultipleCards) {
-        nextButton.disabled = true;
+        updateSwipeCue(0);
         return;
       }
 
       const currentIndex =
         typeof indexOverride === "number" ? indexOverride : findNearestCardIndex(strip);
-      nextButton.disabled = currentIndex >= cards.length - 1;
+      if (nextButton) {
+        nextButton.disabled = currentIndex >= cards.length - 1;
+      }
+      updateSwipeCue(currentIndex);
+    }
+
+    function renderSwipeDots() {
+      if (!swipeDots) return;
+      swipeDots.textContent = "";
+      const cards = getCards(strip);
+      cards.forEach((_, index) => {
+        const dot = document.createElement("span");
+        dot.className = "collage-swipe__dot";
+        if (index === 0) {
+          dot.classList.add("is-active");
+        }
+        swipeDots.appendChild(dot);
+      });
+    }
+
+    function updateSwipeCue(indexOverride = 0) {
+      const cards = getCards(strip);
+      const hasMultipleCards = enabled && cards.length > 1;
+      swipeHint?.classList.toggle("is-visible", hasMultipleCards);
+      if (!swipeDots) return;
+
+      const currentIndex =
+        typeof indexOverride === "number" ? indexOverride : findNearestCardIndex(strip);
+      Array.from(swipeDots.children).forEach((dot, index) => {
+        dot.classList.toggle("is-active", index === currentIndex);
+      });
+
+      if (swipeText) {
+        swipeText.textContent = currentIndex >= cards.length - 1 ? "Last card" : "Swipe >";
+      }
     }
   }
 
@@ -645,6 +824,11 @@ function scrollCardIntoView(strip, card) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function normalizeSceneName(name) {
+  if (typeof name !== "string") return "";
+  return SCENE_ORDER.includes(name) ? name : "";
 }
 
 

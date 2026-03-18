@@ -37,6 +37,17 @@
         <span class="theme-switch__thumb"></span>
       </span>
     </button>
+    <aside class="inapp-prompt is-hidden" id="inapp-prompt" aria-live="polite">
+      <p class="inapp-prompt__text" id="inapp-prompt-text">
+        For smoother typing and playback, open this in your browser.
+      </p>
+      <div class="inapp-prompt__actions">
+        <button class="inapp-prompt__button" id="inapp-open-button" type="button">Open in browser</button>
+        <button class="inapp-prompt__button inapp-prompt__button--ghost" id="inapp-dismiss-button" type="button">
+          Not now
+        </button>
+      </div>
+    </aside>
 
     <div class="lock-screen" id="lock-screen">
       <div class="lock-screen__veil"></div>
@@ -301,6 +312,10 @@
             <button class="collage-next" id="collage-next" type="button" aria-label="Next collage card">
               >
             </button>
+            <div class="collage-swipe" id="collage-swipe" aria-hidden="true">
+              <p class="collage-swipe__text" id="collage-swipe-text">Swipe &gt;</p>
+              <div class="collage-swipe__dots" id="collage-swipe-dots"></div>
+            </div>
           </div>
         </section>
 

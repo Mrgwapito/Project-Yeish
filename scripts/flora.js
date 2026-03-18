@@ -30,6 +30,7 @@ const lilyMotionMap = new Map();
 const dustMotionTweens = new Set();
 let activeLilyScene = "welcome";
 let ambientSuspended = false;
+let lowPowerMode = false;
 
 export function prepareTypeNodes(nodes) {
   nodes.forEach((node) => {
@@ -334,6 +335,11 @@ export function setActiveLilyScene(sceneName) {
           return;
         }
 
+        if (lowPowerMode && lily.dataset.depth === "back") {
+          tween.pause();
+          return;
+        }
+
         if (isActiveScene) {
           tween.play();
         } else {
@@ -349,7 +355,7 @@ export function setAmbientSuspended(isSuspended) {
   document.body.classList.toggle("is-animation-paused", ambientSuspended);
 
   dustMotionTweens.forEach((tween) => {
-    if (ambientSuspended) {
+    if (ambientSuspended || lowPowerMode) {
       tween.pause();
     } else {
       tween.resume();
@@ -364,6 +370,42 @@ export function setAmbientSuspended(isSuspended) {
   }
 
   setActiveLilyScene(activeLilyScene);
+}
+
+export function setLowPowerMode(enabled) {
+  lowPowerMode = Boolean(enabled);
+  document.body.classList.toggle("is-adaptive-low", lowPowerMode);
+
+  dustMotionTweens.forEach((tween) => {
+    if (lowPowerMode || ambientSuspended) {
+      tween.pause();
+    } else {
+      tween.resume();
+    }
+  });
+
+  lilyMotionMap.forEach((tweens, lily) => {
+    const [primaryTween, haloTween] = tweens;
+    if (lowPowerMode) {
+      if (lily.dataset.depth === "back") {
+        primaryTween?.pause();
+        lily.classList.add("is-static");
+      }
+      haloTween?.pause();
+      return;
+    }
+
+    lily.classList.remove("is-static");
+    if (!ambientSuspended && lily.closest(".scene")?.dataset.scene === activeLilyScene) {
+      primaryTween?.play();
+      haloTween?.play();
+    }
+  });
+
+  document.querySelectorAll(".falling-lily").forEach((lily, index) => {
+    const shouldPause = lowPowerMode && index % 2 === 1;
+    lily.style.animationPlayState = shouldPause ? "paused" : "";
+  });
 }
 
 export function animateWelcomeEntrance(env) {

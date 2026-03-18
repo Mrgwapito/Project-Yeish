@@ -1,4 +1,10 @@
 export const CONTENT = {
+  inApp: {
+    message: "For smoother typing and playback, open this in your browser.",
+    openLabel: "Open in browser",
+    dismissLabel: "Not now",
+    fallbackMessage: "If it stays here, tap the menu and choose Open in browser.",
+  },
   lock: {
     eyebrow: "A private little garden",
     title: "Before we begin",
@@ -13,6 +19,8 @@ export const CONTENT = {
     title: "Do I Wanna Know?",
     artist: "Hozier",
     statusIdle: "Tap play whenever you want.",
+    statusRetryTap: "Tap again to play.",
+    statusAutoplayBlocked: "Playback was blocked by this browser. Tap play once more.",
     stateIdle: "Ready",
   },
   welcome: {
@@ -62,24 +70,34 @@ export const CONTENT = {
       {
         title: "Yes, I feel it too",
         followup: "That means a lot. I would like to keep this honest, gentle, and real.",
+        endingKey: "positive",
       },
       {
         title: "I want to keep getting to know you more",
         followup: "That feels good to hear. We can let it unfold at a pace that feels right.",
+        endingKey: "positive",
       },
       {
         title: "I am not sure yet",
         followup: "That is completely okay. I would rather have honesty than a rushed answer.",
+        endingKey: "uncertain",
       },
       {
         title: "Let us talk about it honestly",
         followup: "I would really value that. A real conversation matters more than guessing.",
+        endingKey: "honest",
       },
     ],
     defaultEcho: "Whatever you feel, I want it to be honest and easy to say.",
   },
   final: {
     line: "Thank you for taking your time here. No pressure at all, honesty is more than enough for me.",
+    variants: {
+      positive:
+        "Thank you for meeting me here, Yeshie. I'd really like to keep getting to know you, slowly and sincerely.",
+      uncertain: "Thank you for being honest, Yeshie. No pressure at all, we can take this gently.",
+      honest: "I appreciate that, Yeshie. Let's talk openly and keep it simple, clear, and real.",
+    },
   },
 };
 
@@ -90,6 +108,9 @@ export function applyContent(dom) {
   setInputPlaceholderById("password-input", CONTENT.lock.passwordPlaceholder);
   setTextById("lock-submit-button", CONTENT.lock.submitLabel);
   setTextById("lock-message", CONTENT.lock.defaultHint);
+  setTextById("inapp-prompt-text", CONTENT.inApp.message);
+  setTextById("inapp-open-button", CONTENT.inApp.openLabel);
+  setTextById("inapp-dismiss-button", CONTENT.inApp.dismissLabel);
 
   setTextById("music-eyebrow", CONTENT.player.eyebrow);
   setTextById("music-title", CONTENT.player.title);
@@ -123,6 +144,7 @@ export function applyContent(dom) {
     const card = dom.responseCards[index];
     if (!card) return;
     card.dataset.followup = option.followup;
+    card.dataset.endingKey = option.endingKey || "";
     const title = card.querySelector(".response-card__title");
     if (title) {
       title.textContent = option.title;

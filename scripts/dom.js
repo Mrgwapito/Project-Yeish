@@ -1,6 +1,10 @@
 export function getDom() {
   return {
     body: document.body,
+    inAppPrompt: document.getElementById("inapp-prompt"),
+    inAppPromptText: document.getElementById("inapp-prompt-text"),
+    inAppOpenButton: document.getElementById("inapp-open-button"),
+    inAppDismissButton: document.getElementById("inapp-dismiss-button"),
     lockScreen: document.getElementById("lock-screen"),
     lockForm: document.getElementById("lock-form"),
     passwordInput: document.getElementById("password-input"),
@@ -16,6 +20,10 @@ export function getDom() {
     sceneProgress: document.getElementById("scene-progress"),
     responseEcho: document.getElementById("response-echo"),
     responseCards: Array.from(document.querySelectorAll(".response-card")),
+    finalLine: document.getElementById("final-line"),
+    collageSwipe: document.getElementById("collage-swipe"),
+    collageSwipeText: document.getElementById("collage-swipe-text"),
+    collageSwipeDots: document.getElementById("collage-swipe-dots"),
     musicPlayer: document.getElementById("music-player"),
     loveSong: document.getElementById("love-song"),
     audioStatus: document.getElementById("audio-status"),

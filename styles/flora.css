@@ -139,6 +139,18 @@ body[data-theme="light"] .falling-lily {
   filter: blur(calc(var(--blur) * 0.8)) saturate(1.12);
 }
 
+body.is-adaptive-low .lily {
+  filter: blur(calc(var(--blur) * 0.5)) saturate(1.02) drop-shadow(0 8px 14px rgba(7, 16, 32, 0.16));
+}
+
+body.is-adaptive-low .lily__halo {
+  display: none;
+}
+
+body.is-adaptive-low .falling-lily:nth-child(n + 4) {
+  display: none;
+}
+
 .lily::before {
   content: "";
   position: absolute;

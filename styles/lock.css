@@ -18,8 +18,8 @@ body.is-locked .theme-switch {
   z-index: 50;
   width: 58px;
   height: 30px;
-  top: calc(0.46rem + env(safe-area-inset-top) + var(--app-vv-top, 0px));
-  right: 0.45rem;
+  top: calc(0.56rem + env(safe-area-inset-top) + var(--app-vv-top, 0px));
+  right: 0.62rem;
 }
 
 body.is-locked .theme-switch__sun,

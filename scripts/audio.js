@@ -1,4 +1,5 @@
 import { formatTime } from "./utils.js";
+import { CONTENT } from "./content.js";
 
 const SEEK_STEP_SECONDS = 10;
 
@@ -23,6 +24,7 @@ export function createAudioController({ dom, state }) {
 
   let lastSeekPaintAt = 0;
   let shuffleMode = false;
+  let playbackBlocked = false;
 
   loveSong.addEventListener("canplay", () => {
     state.songReady = true;
@@ -39,7 +41,9 @@ export function createAudioController({ dom, state }) {
   });
 
   loveSong.addEventListener("playing", () => {
+    playbackBlocked = false;
     syncPlayButton(true);
+    dom.musicPlayer?.classList.remove("is-needs-tap");
     audioStatus.textContent = "Now playing.";
     if (musicState) musicState.textContent = "Playing";
   });
@@ -73,6 +77,7 @@ export function createAudioController({ dom, state }) {
     if (loopToggle) loopToggle.disabled = true;
     audioStatus.textContent = "I could not load the local song from the music folder yet.";
     if (musicState) musicState.textContent = "Song unavailable";
+    dom.musicPlayer?.classList.remove("is-needs-tap");
   });
 
   playerToggle.addEventListener("click", async () => {
@@ -123,15 +128,19 @@ export function createAudioController({ dom, state }) {
 
     try {
       await loveSong.play();
+      playbackBlocked = false;
+      dom.musicPlayer?.classList.remove("is-needs-tap");
       return true;
     } catch {
+      playbackBlocked = true;
+      dom.musicPlayer?.classList.add("is-needs-tap");
       if (!state.songMissing) {
         audioStatus.textContent = fromManualTap
-          ? "Playback needs one more tap on this device."
-          : "If playback does not start right away, tap play once more.";
+          ? CONTENT.player.statusRetryTap
+          : CONTENT.player.statusAutoplayBlocked;
       }
       syncPlayButton(false);
-      if (musicState) musicState.textContent = "Tap play if needed";
+      if (musicState) musicState.textContent = playbackBlocked ? "Tap again" : "Tap play if needed";
       return false;
     }
   }
