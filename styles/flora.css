@@ -21,7 +21,6 @@
   aspect-ratio: 1;
   opacity: var(--fall-alpha, 0.3);
   filter: blur(var(--fall-blur, 0px));
-  will-change: transform, opacity;
   transform: translateZ(0);
   border-radius: 50%;
   background:
@@ -54,11 +53,15 @@
   width: var(--size);
   aspect-ratio: 0.84 / 1;
   opacity: var(--alpha);
-  will-change: transform, opacity;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   transition: filter 260ms ease;
   filter: blur(var(--blur)) saturate(1.08) drop-shadow(0 10px 22px rgba(7, 16, 32, 0.2));
+}
+
+.scene--active .lily,
+.scene--active .falling-lily {
+  will-change: transform, opacity;
 }
 
 .lily.is-static .petal,

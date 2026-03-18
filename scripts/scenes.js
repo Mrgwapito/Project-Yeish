@@ -92,7 +92,12 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
 
   function canAdvanceFrom(sceneName) {
     if (sceneName === "keepsake") return keepsakeOpened;
+    if (sceneName === "response") return hasSelectedResponse();
     return true;
+  }
+
+  function hasSelectedResponse() {
+    return dom.responseCards.some((card) => card.classList.contains("is-selected"));
   }
 
   function updateNavState() {
@@ -132,6 +137,7 @@ export function createSceneController({ dom, state, sceneMap, audio, env, tracke
         card.classList.add("is-selected");
         responseEcho.textContent = card.dataset.followup || DEFAULT_RESPONSE_ECHO;
         tracker?.captureResponse(card.textContent);
+        updateNavState();
 
         if (env.hasGSAP && !env.reducedMotion) {
           gsap.killTweensOf(responseEcho);

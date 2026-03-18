@@ -85,6 +85,11 @@ body.is-locked .experience-shell {
   pointer-events: none;
 }
 
+body.is-locked .experience-shell *,
+body.is-animation-paused .experience-shell * {
+  animation-play-state: paused !important;
+}
+
 .global-atmosphere {
   position: absolute;
   inset: 0;
@@ -109,7 +114,6 @@ body.is-locked .experience-shell {
     radial-gradient(circle at 50% 16%, rgba(104, 140, 189, 0.12), transparent 28%);
   filter: blur(10px);
   animation: moon-drift 20s ease-in-out infinite alternate;
-  will-change: transform, opacity;
 }
 
 .global-atmosphere__aurora {
@@ -124,7 +128,6 @@ body.is-locked .experience-shell {
   opacity: 0.82;
   transform: translate3d(0, 0, 0) scale(1.05);
   animation: aurora-sway 18s ease-in-out infinite alternate;
-  will-change: transform, opacity;
 }
 
 .global-atmosphere__bloom {
@@ -144,7 +147,6 @@ body.is-locked .experience-shell {
   opacity: 0.42;
   transform: scale(1.12);
   animation: bloom-rotate 34s linear infinite;
-  will-change: transform, opacity;
 }
 
 .global-atmosphere__mist {
@@ -155,7 +157,6 @@ body.is-locked .experience-shell {
   filter: blur(18px);
   transform: translate3d(0, 0, 0);
   animation: mist-slide 24s ease-in-out infinite alternate;
-  will-change: transform, opacity;
 }
 
 .global-atmosphere__grain {

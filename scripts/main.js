@@ -4,6 +4,7 @@ import { createAudioController } from "./audio.js";
 import {
   setupAmbientMotion,
   setActiveLilyScene,
+  setAmbientSuspended,
   animateWelcomeEntrance,
   buildDust,
   buildFallingLilies,
@@ -19,6 +20,8 @@ export function bootApp() {
   const env = getEnv();
   const dom = getDom();
   const compactMode = env.compactMotion || env.lowPerfDevice;
+  const canAnimateWelcome = env.hasGSAP && !env.reducedMotion;
+  let welcomeIntroStarted = false;
 
   if (env.hasGSAP) {
     gsap.config({ autoSleep: 60, force3D: true, nullTargetWarn: false });
@@ -44,6 +47,7 @@ export function bootApp() {
   buildFallingLilies(dom.petalFall, env);
   buildLilies(env);
   enableLilyDrag(env);
+  setAmbientSuspended(true);
 
   const audio = createAudioController({ dom, state });
 
@@ -69,6 +73,21 @@ export function bootApp() {
   }
   dom.body.dataset.scene = state.currentScene;
 
+  function startWelcomeVisuals() {
+    if (welcomeIntroStarted) return;
+    welcomeIntroStarted = true;
+    setAmbientSuspended(document.hidden);
+
+    if (canAnimateWelcome) {
+      setupAmbientMotion(env);
+      setActiveLilyScene(state.currentScene);
+      animateWelcomeEntrance(env);
+      return;
+    }
+
+    scenes.showWelcomeFallback();
+  }
+
   bindLock({
     dom,
     env,
@@ -77,20 +96,24 @@ export function bootApp() {
     onUnlock: () => {
       state.experienceUnlocked = true;
       tracker.markUnlocked();
+      startWelcomeVisuals();
     },
   });
 
-  if (env.hasGSAP && !env.reducedMotion) {
-    setupAmbientMotion(env);
-    setActiveLilyScene(state.currentScene);
-    animateWelcomeEntrance(env);
-  } else {
-    scenes.showWelcomeFallback();
-  }
+  document.addEventListener("visibilitychange", () => {
+    if (!state.experienceUnlocked) return;
+    setAmbientSuspended(document.hidden);
+
+    if (env.hasGSAP) {
+      if (document.hidden) {
+        gsap.ticker.sleep();
+      } else {
+        gsap.ticker.wake();
+      }
+    }
+  });
 
   if (!state.experienceUnlocked && !env.compactMotion) {
     dom.passwordInput?.focus();
   }
 }
-
-

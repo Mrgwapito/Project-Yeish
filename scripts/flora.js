@@ -27,6 +27,9 @@ const LILY_TINTS = [
   },
 ];
 const lilyMotionMap = new Map();
+const dustMotionTweens = new Set();
+let activeLilyScene = "welcome";
+let ambientSuspended = false;
 
 export function prepareTypeNodes(nodes) {
   nodes.forEach((node) => {
@@ -54,7 +57,7 @@ export function buildDust(field, env) {
     fragment.appendChild(mote);
 
     if (env.hasGSAP && !env.reducedMotion && !env.lowPerfDevice) {
-      gsap.to(mote, {
+      const tween = gsap.to(mote, {
         x: random(-10, 10),
         y: random(-12, 12),
         duration: random(7, 12),
@@ -62,7 +65,9 @@ export function buildDust(field, env) {
         repeat: -1,
         yoyo: true,
         delay: random(0, 2),
+        paused: true,
       });
+      dustMotionTweens.add(tween);
     }
   }
 
@@ -307,9 +312,14 @@ export function setupAmbientMotion(env) {
 
     lilyMotionMap.set(lily, tweens);
   });
+
+  if (!ambientSuspended) {
+    setActiveLilyScene(activeLilyScene);
+  }
 }
 
 export function setActiveLilyScene(sceneName) {
+  activeLilyScene = sceneName;
   if (!lilyMotionMap.size) return;
 
   document.querySelectorAll(".scene").forEach((scene) => {
@@ -319,6 +329,11 @@ export function setActiveLilyScene(sceneName) {
       if (!tweens) return;
 
       tweens.forEach((tween) => {
+        if (ambientSuspended) {
+          tween.pause();
+          return;
+        }
+
         if (isActiveScene) {
           tween.play();
         } else {
@@ -327,6 +342,28 @@ export function setActiveLilyScene(sceneName) {
       });
     });
   });
+}
+
+export function setAmbientSuspended(isSuspended) {
+  ambientSuspended = Boolean(isSuspended);
+  document.body.classList.toggle("is-animation-paused", ambientSuspended);
+
+  dustMotionTweens.forEach((tween) => {
+    if (ambientSuspended) {
+      tween.pause();
+    } else {
+      tween.resume();
+    }
+  });
+
+  if (ambientSuspended) {
+    lilyMotionMap.forEach((tweens) => {
+      tweens.forEach((tween) => tween.pause());
+    });
+    return;
+  }
+
+  setActiveLilyScene(activeLilyScene);
 }
 
 export function animateWelcomeEntrance(env) {

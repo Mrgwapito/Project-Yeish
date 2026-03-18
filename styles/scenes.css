@@ -75,13 +75,21 @@
   visibility: hidden;
   pointer-events: none;
   perspective: 1200px;
-  will-change: opacity, transform;
+  will-change: auto;
 }
 
 .scene--active {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+  will-change: opacity, transform;
+}
+
+.scene:not(.scene--active) .scene__glow,
+.scene:not(.scene--active) .visual-waveform span,
+.scene:not(.scene--active) .visual-link,
+.scene:not(.scene--active) .visual-lily {
+  animation-play-state: paused;
 }
 
 .scene__glow {
@@ -403,6 +411,12 @@ body.is-compact-motion .scene__glow {
 .memory-card,
 .response-card,
 .response-echo {
+  will-change: auto;
+}
+
+.scene--active .memory-card,
+.scene--active .response-card,
+.scene--active .response-echo {
   will-change: transform, opacity;
 }
 

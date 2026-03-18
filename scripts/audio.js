@@ -14,6 +14,7 @@ export function createAudioController({ dom, state }) {
   if (!loveSong || !audioStatus || !playerToggle || !seekBar || !currentTimeLabel || !durationTimeLabel) {
     return { startSong: async () => false };
   }
+  let lastSeekPaintAt = 0;
 
   loveSong.addEventListener("canplay", () => {
     state.songReady = true;
@@ -26,7 +27,7 @@ export function createAudioController({ dom, state }) {
   loveSong.addEventListener("loadedmetadata", () => {
     state.songReady = true;
     updateDuration();
-    updateSeek();
+    updateSeek(true);
   });
 
   loveSong.addEventListener("playing", () => {
@@ -44,11 +45,11 @@ export function createAudioController({ dom, state }) {
     if (musicState) musicState.textContent = "Paused";
   });
 
-  loveSong.addEventListener("timeupdate", updateSeek);
+  loveSong.addEventListener("timeupdate", () => updateSeek(false));
 
   loveSong.addEventListener("ended", () => {
     syncPlayButton(false);
-    updateSeek();
+    updateSeek(true);
     audioStatus.textContent = "Finished. Tap play to replay.";
     if (musicState) musicState.textContent = "Replay";
   });
@@ -74,7 +75,7 @@ export function createAudioController({ dom, state }) {
   seekBar.addEventListener("change", () => {
     if (!Number.isFinite(loveSong.duration) || loveSong.duration <= 0) return;
     loveSong.currentTime = (Number(seekBar.value) / 100) * loveSong.duration;
-    updateSeek();
+    updateSeek(true);
   });
 
   return { startSong };
@@ -121,7 +122,11 @@ export function createAudioController({ dom, state }) {
     seekBar.disabled = duration <= 0;
   }
 
-  function updateSeek() {
+  function updateSeek(force = false) {
+    const now = performance.now();
+    if (!force && now - lastSeekPaintAt < 120) return;
+    lastSeekPaintAt = now;
+
     const current = Number.isFinite(loveSong.currentTime) ? loveSong.currentTime : 0;
     const duration = Number.isFinite(loveSong.duration) ? loveSong.duration : 0;
     const value = duration > 0 ? (current / duration) * 100 : 0;
